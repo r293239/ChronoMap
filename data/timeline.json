@@ -1,0 +1,66 @@
+{
+  "1800": {
+    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PR"],
+    "inactiveCountries": ["PL"],
+    "colors": {
+      "FR": "#4e79a7",  // France - blue
+      "GB": "#76b7b2",  // UK - teal
+      "AT": "#f28e2c",  // Austria - orange
+      "RU": "#e15759",  // Russia - red
+      "OT": "#59a14f",  // Ottoman - green
+      "DE": "#bab0ab",  // German - gray
+      "PR": "#edc949",  // Prussia - yellow
+      "ES": "#b07aa1",  // Spain - purple
+      "IT": "#ff9da7"   // Italy - pink
+    },
+    "events": ["Napoleonic Wars ongoing", "Holy Roman Empire exists"]
+  },
+  "1815": {
+    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PR", "PL"],
+    "inactiveCountries": [],
+    "colors": {
+      "FR": "#4e79a7",
+      "GB": "#76b7b2",
+      "AT": "#f28e2c",
+      "RU": "#e15759",
+      "OT": "#59a14f",
+      "DE": "#bab0ab",
+      "PR": "#edc949",
+      "PL": "#86bcb6",  // Poland appears
+      "ES": "#b07aa1",
+      "IT": "#ff9da7"
+    },
+    "events": ["Congress of Vienna", "Polish Congress Kingdom created"]
+  },
+  "1871": {
+    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PL"],
+    "inactiveCountries": ["PR"],
+    "colors": {
+      "FR": "#4e79a7",
+      "GB": "#76b7b2",
+      "AT": "#f28e2c",
+      "RU": "#e15759",
+      "OT": "#59a14f",
+      "DE": "#3498db",  // Germany unified - brighter blue
+      "PL": "#86bcb6",
+      "ES": "#b07aa1",
+      "IT": "#ff9da7"
+    },
+    "events": ["German Unification", "Prussia becomes part of Germany"]
+  },
+  "1919": {
+    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "PL"],
+    "inactiveCountries": ["OT"],
+    "colors": {
+      "FR": "#4e79a7",
+      "GB": "#76b7b2",
+      "AT": "#e74c3c",  // Austria-Hungary dissolved
+      "RU": "#c0392b",  // Soviet Russia
+      "DE": "#3498db",
+      "PL": "#86bcb6",
+      "ES": "#b07aa1",
+      "IT": "#ff9da7"
+    },
+    "events": ["Treaty of Versailles", "Ottoman Empire dissolved"]
+  }
+}
