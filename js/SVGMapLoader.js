@@ -12,7 +12,6 @@ class SVGMapLoader {
         this.translator = null;
         this.isLoading = false;
         this.currentColors = {};
-        this.debugMode = true;
         
         // Ensure timeline.js is loaded
         if (typeof timelineData === 'undefined') {
@@ -67,52 +66,30 @@ class SVGMapLoader {
         }
         
         try {
-            // Try multiple possible file paths
-            const paths = [
-                'maps/world-map.svg',    // Your actual file
-                './maps/world-map.svg',
-                '/maps/world-map.svg',
-                'maps/world.svg',        // Fallback
-                './maps/world.svg'
-            ];
+            // Try to load world-map.svg
+            const response = await fetch('maps/world-map.svg');
             
-            let svgLoaded = false;
-            
-            for (const path of paths) {
-                try {
-                    console.log(`🔍 Trying to load: ${path}`);
-                    const response = await fetch(path);
+            if (response.ok) {
+                const svgText = await response.text();
+                
+                // Basic validation
+                if (svgText.includes('<svg') && svgText.includes('</svg>')) {
+                    container.innerHTML = svgText;
+                    console.log(`✅ SVG loaded successfully`);
                     
-                    if (response.ok) {
-                        const svgText = await response.text();
-                        
-                        // Basic validation
-                        if (svgText.includes('<svg') && svgText.includes('</svg>')) {
-                            container.innerHTML = svgText;
-                            console.log(`✅ SVG loaded successfully from: ${path}`);
-                            svgLoaded = true;
-                            
-                            // Make SVG responsive
-                            const svgElement = container.querySelector('svg');
-                            if (svgElement) {
-                                svgElement.style.width = '100%';
-                                svgElement.style.height = '100%';
-                            }
-                            break;
-                        } else {
-                            console.warn(`File ${path} doesn't appear to be valid SVG`);
-                        }
-                    } else {
-                        console.log(`Path ${path} returned: ${response.status}`);
+                    // Make SVG responsive
+                    const svgElement = container.querySelector('svg');
+                    if (svgElement) {
+                        svgElement.style.width = '100%';
+                        svgElement.style.height = '100%';
                     }
-                } catch (fetchError) {
-                    console.log(`Error loading ${path}:`, fetchError.message);
+                } else {
+                    console.warn(`File doesn't appear to be valid SVG`);
+                    this.createFallbackMap();
                 }
-            }
-            
-            if (!svgLoaded) {
+            } else {
+                console.log(`Failed to load: ${response.status}`);
                 this.createFallbackMap();
-                console.warn("⚠️ Using fallback map - check if world-map.svg exists");
             }
             
         } catch (error) {
@@ -132,17 +109,6 @@ class SVGMapLoader {
             <div style="padding: 40px; text-align: center; color: #666; background: #f8f9fa; border-radius: 10px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
                 <h3 style="margin-bottom: 20px; color: #d32f2f;">⚠️ Map Loading Issue</h3>
                 <p style="margin-bottom: 15px;">Unable to load <strong>maps/world-map.svg</strong></p>
-                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: left;">
-                    <p><strong>Expected file structure:</strong></p>
-                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; overflow: auto;">
-ChronoMap/
-├── maps/
-│   └── <strong>world-map.svg</strong>  &lt;-- YOUR SVG FILE
-├── js/
-│   ├── SVGMapLoader.js
-│   └── timeline.js
-└── index.html</pre>
-                </div>
                 <button onclick="location.reload()" 
                         style="padding: 12px 30px; background: #283593; color: white; 
                                border: none; border-radius: 6px; cursor: pointer; 
@@ -330,9 +296,7 @@ ChronoMap/
         const container = document.getElementById('country-list');
         if (!container || !this.countryData) return;
         
-        const europeanCountries = this.countryData.countries.filter(c => 
-            c.continent === 'europe' || !c.continent // Include all if no continent specified
-        );
+        const europeanCountries = this.countryData.countries;
         
         container.innerHTML = `
             <div class="country-grid">
@@ -642,9 +606,13 @@ ChronoMap/
         
         if (prevButton) {
             prevButton.disabled = this.currentYear <= 1400;
+            prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
+            prevButton.style.cursor = prevButton.disabled ? 'not-allowed' : 'pointer';
         }
         if (nextButton) {
             nextButton.disabled = this.currentYear >= 2025;
+            nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
+            nextButton.style.cursor = nextButton.disabled ? 'not-allowed' : 'pointer';
         }
     }
 
@@ -675,16 +643,10 @@ ChronoMap/
                 <div style="padding: 40px; text-align: center; color: #d32f2f; background: #ffebee; border-radius: 10px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
                     <h3 style="margin-bottom: 20px;">⚠️ Error</h3>
                     <p style="margin-bottom: 25px; font-size: 1.1rem;">${message}</p>
-                    <div style="display: flex; gap: 15px; justify-content: center;">
-                        <button onclick="location.reload()" 
-                                style="padding: 12px 25px; background: #283593; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                            🔄 Reload Page
-                        </button>
-                        <button onclick="console.clear(); console.log('Debug mode activated');" 
-                                style="padding: 12px 25px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                            🐛 Debug Console
-                        </button>
-                    </div>
+                    <button onclick="location.reload()" 
+                            style="padding: 12px 25px; background: #283593; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                        🔄 Reload Page
+                    </button>
                 </div>
             `;
         }
@@ -736,7 +698,7 @@ ChronoMap/
         }
     }
     
-    // Debug function
+    // Debug function - FIXED VERSION
     debug() {
         console.log("=== SVGMapLoader Debug Info ===");
         console.log("Current Year:", this.currentYear);
@@ -758,4 +720,4 @@ ChronoMap/
 
 // Make globally available
 window.SVGMapLoader = SVGMapLoader;
-console.log("✅ SVGMapLoader v3.0 loaded. Use: const loader = new SVGMapLoader(); loader.initialize();");
+console.log("✅ SVGMapLoader loaded. Use: const loader = new SVGMapLoader(); loader.initialize();");
