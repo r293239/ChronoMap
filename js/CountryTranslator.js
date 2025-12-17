@@ -1,4 +1,4 @@
-// js/CountryTranslator.js - Maps timeline country codes to SVG structure
+// js/CountryTranslator.js - Fixed Version
 class CountryTranslator {
     constructor() {
         console.log("🌍 CountryTranslator initializing...");
@@ -13,9 +13,6 @@ class CountryTranslator {
         
         console.log("🔍 Scanning SVG for country elements...");
         
-        // First, let's understand the SVG structure
-        this.analyzeSVGStructure();
-        
         // Build mapping based on actual SVG structure
         this.buildCountryMapping();
         
@@ -28,31 +25,8 @@ class CountryTranslator {
         return this;
     }
 
-    analyzeSVGStructure() {
-        console.log("📊 Analyzing SVG structure...");
-        
-        // Get all elements that might be countries
-        const potentialCountries = document.querySelectorAll('g, path, polygon');
-        
-        console.log(`Total potential country elements: ${potentialCountries.length}`);
-        
-        // Sample some elements to understand structure
-        const sampleElements = Array.from(potentialCountries).slice(0, 5);
-        sampleElements.forEach((el, i) => {
-            console.log(`Sample ${i}:`, {
-                tagName: el.tagName,
-                id: el.id,
-                className: el.className,
-                parentId: el.parentNode?.id || 'none'
-            });
-        });
-    }
-
     buildCountryMapping() {
         console.log("🗺️ Building country mapping...");
-        
-        // Based on your SVG structure from GitHub, let's map countries
-        // Your SVG uses groups with classes like "land coast fr fx"
         
         // European countries mapping for your specific SVG
         const svgMapping = {
@@ -145,7 +119,8 @@ class CountryTranslator {
 
     // Get SVG element for a country code
     getElement(countryCode) {
-        return this.countryElements.get(countryCode)?.element || null;
+        const info = this.countryElements.get(countryCode);
+        return info ? info.element : null;
     }
 
     // Get country info
@@ -170,7 +145,7 @@ class CountryTranslator {
     colorCountry(countryCode, color, strokeColor = '#333', strokeWidth = '1px') {
         const info = this.countryElements.get(countryCode);
         
-        if (!info) {
+        if (!info || !info.element) {
             console.warn(`Cannot color ${countryCode}: country not found in SVG`);
             return false;
         }
@@ -219,7 +194,7 @@ class CountryTranslator {
         const info = this.countryElements.get(countryCode);
         const cache = this.colorCache.get(countryCode);
         
-        if (!info) return false;
+        if (!info || !info.element) return false;
         
         const originalColor = cache?.originalFill || '#f0f0f0';
         info.element.style.fill = originalColor;
@@ -235,6 +210,8 @@ class CountryTranslator {
         let resetCount = 0;
         
         for (const [countryCode, info] of this.countryElements) {
+            if (!info.element) continue;
+            
             info.element.style.fill = info.originalFill;
             info.element.style.stroke = '#999';
             info.element.style.strokeWidth = '0.5px';
@@ -248,7 +225,7 @@ class CountryTranslator {
     // Get current color of a country
     getCurrentColor(countryCode) {
         const info = this.countryElements.get(countryCode);
-        if (!info) return null;
+        if (!info || !info.element) return null;
         
         return info.element.style.fill || info.originalFill;
     }
@@ -256,9 +233,7 @@ class CountryTranslator {
     // Apply hover effect to a country
     highlightCountry(countryCode) {
         const info = this.countryElements.get(countryCode);
-        if (!info) return false;
-        
-        const currentColor = this.getCurrentColor(countryCode);
+        if (!info || !info.element) return false;
         
         // Store original state if not already
         if (!info.element.dataset.originalFilter) {
@@ -275,7 +250,7 @@ class CountryTranslator {
     // Remove hover effect
     unhighlightCountry(countryCode) {
         const info = this.countryElements.get(countryCode);
-        if (!info) return false;
+        if (!info || !info.element) return false;
         
         // Restore original filter
         info.element.style.filter = info.element.dataset.originalFilter || 'none';
@@ -287,7 +262,7 @@ class CountryTranslator {
     // Add click interaction to a country
     addClickHandler(countryCode, handler) {
         const info = this.countryElements.get(countryCode);
-        if (!info) return false;
+        if (!info || !info.element) return false;
         
         info.element.style.cursor = 'pointer';
         info.element.addEventListener('click', handler);
@@ -304,7 +279,7 @@ class CountryTranslator {
     // Remove click handlers
     removeClickHandlers(countryCode) {
         const info = this.countryElements.get(countryCode);
-        if (!info || !info.element.dataset.clickHandlers) return false;
+        if (!info || !info.element || !info.element.dataset.clickHandlers) return false;
         
         // Note: In a real implementation, you'd store and remove specific handlers
         info.element.style.cursor = 'default';
@@ -312,26 +287,38 @@ class CountryTranslator {
         return true;
     }
 
-    // Debug: show all found countries
+    // Debug: show all found countries - FIXED VERSION
     debug() {
         console.log("=== CountryTranslator Debug ===");
         console.log(`Total countries mapped: ${this.countryElements.size}`);
         
         console.log("\n📋 Country Mapping:");
         for (const [code, info] of this.countryElements) {
-            console.log(`  ${code} (${info.name}):`, {
+            const elementInfo = {
                 found: !!info.element,
-                tagName: info.element?.tagName,
-                id: info.element?.id,
-                className: info.element?.className?.substring(0, 50) + '...',
-                children: info.element?.children?.length || 0
-            });
+                tagName: info.element ? info.element.tagName : 'none',
+                id: info.element ? info.element.id || 'no-id' : 'none',
+                hasClassName: info.element && typeof info.element.className === 'string',
+                children: info.element ? (info.element.children ? info.element.children.length : 0) : 0
+            };
+            
+            // Safely handle className
+            if (elementInfo.hasClassName) {
+                const className = info.element.className;
+                elementInfo.className = className.length > 50 ? 
+                    className.substring(0, 50) + '...' : 
+                    className;
+            } else {
+                elementInfo.className = 'no-class';
+            }
+            
+            console.log(`  ${code} (${info.name}):`, elementInfo);
         }
         
         console.log("\n🎨 Current Colors:");
         for (const [code, info] of this.countryElements) {
             const currentColor = this.getCurrentColor(code);
-            console.log(`  ${code}: ${currentColor}`);
+            console.log(`  ${code}: ${currentColor || 'default'}`);
         }
     }
 
@@ -356,7 +343,7 @@ class CountryTranslator {
         
         if (element.id) {
             return `#${element.id}`;
-        } else if (element.className) {
+        } else if (element.className && typeof element.className === 'string') {
             const firstClass = element.className.split(' ')[0];
             return `${element.tagName.toLowerCase()}.${firstClass}`;
         }
@@ -376,7 +363,11 @@ class CountryTranslator {
 
     // Get list of all country names
     getCountryNames() {
-        return Array.from(this.countryElements.values()).map(info => info.name);
+        const names = [];
+        for (const info of this.countryElements.values()) {
+            names.push(info.name);
+        }
+        return names;
     }
 }
 
