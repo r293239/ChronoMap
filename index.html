@@ -6,571 +6,548 @@
     <title>ChronoMap - European Historical Borders from 1800</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Inline styles for immediate functionality */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        /* Critical styles for immediate functionality */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
+        
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
-
+        
         /* Header */
         .main-header {
             background: linear-gradient(90deg, #1a237e, #283593);
             color: white;
-            padding: 25px 40px;
+            padding: 30px 40px;
             text-align: center;
         }
-
+        
         .main-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
             background: linear-gradient(45deg, #ffd700, #ffecb3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-
+        
         .header-subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.2rem;
+            opacity: 0.95;
             max-width: 800px;
             margin: 0 auto;
             line-height: 1.6;
         }
-
+        
         .header-highlight {
-            background: rgba(255, 215, 0, 0.2);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: bold;
+            background: rgba(255, 215, 0, 0.25);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
         }
-
-        /* Timeline Controls */
+        
+        /* Timeline Section */
         .timeline-section {
             background: #f8f9fa;
-            padding: 20px 40px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 25px 40px;
+            border-bottom: 2px solid #eaeaea;
         }
-
+        
         .timeline-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-
+        
         .year-display {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
-
+        
         #current-year {
-            font-size: 3rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            font-weight: 900;
             color: #283593;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+            min-width: 140px;
         }
-
+        
         .year-label {
-            font-size: 1rem;
-            color: #666;
-            background: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
+            font-size: 1.1rem;
+            color: white;
+            background: #283593;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
         }
-
+        
         .era-info {
             text-align: right;
+            flex: 1;
+            min-width: 300px;
         }
-
+        
         #era-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: #283593;
-            font-weight: 600;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
-
+        
         #era-description {
             color: #666;
-            font-size: 0.95rem;
-            max-width: 400px;
+            font-size: 1.1rem;
+            max-width: 500px;
         }
-
+        
         /* Year Slider */
         .year-slider-container {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
         }
-
+        
         .slider-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #555;
         }
-
+        
         .slider-labels {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.9rem;
+            margin-top: 15px;
+            font-size: 0.95rem;
             color: #666;
         }
-
-        .slider-start, .slider-end {
-            font-weight: 600;
-        }
-
+        
         .slider-current {
             color: #283593;
             font-weight: bold;
+            font-size: 1.1rem;
         }
-
+        
         input[type="range"] {
             width: 100%;
-            height: 8px;
+            height: 12px;
             -webkit-appearance: none;
             background: linear-gradient(90deg, #1a237e, #283593, #5c6bc0);
             border-radius: 10px;
             outline: none;
+            border: 2px solid white;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
-
+        
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
             background: #ffd700;
-            border: 3px solid #283593;
+            border: 4px solid #283593;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s;
         }
-
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+        
         /* Navigation Buttons */
         .nav-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
+            margin-top: 25px;
             justify-content: center;
+            flex-wrap: wrap;
         }
-
+        
         .nav-btn {
-            padding: 12px 25px;
+            padding: 15px 30px;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: center;
         }
-
+        
         .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
-
+        
+        .nav-btn:active {
+            transform: translateY(-1px);
+        }
+        
         .btn-prev {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-
+        
         .btn-next {
             background: linear-gradient(135deg, #764ba2, #667eea);
             color: white;
         }
-
+        
         .btn-1800 {
             background: linear-gradient(135deg, #ffd700, #ff9800);
             color: #283593;
-            font-weight: 800;
+            font-weight: 900;
+            font-size: 1.2rem;
         }
-
+        
         /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 30px;
             padding: 30px 40px;
-            min-height: 600px;
+            min-height: 650px;
         }
-
-        /* Map Container */
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Map Section */
         .map-section {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            padding: 25px;
             position: relative;
             overflow: hidden;
         }
-
+        
         .map-title-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-
+        
         .map-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: #283593;
-            font-weight: 600;
+            font-weight: 700;
         }
-
+        
         .map-legend {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
         }
-
+        
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            color: #666;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #555;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 8px;
         }
-
+        
         .legend-color {
-            width: 15px;
-            height: 15px;
-            border-radius: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid rgba(0,0,0,0.1);
         }
-
+        
+        /* Map Container */
         #map-container {
             width: 100%;
-            height: 500px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
+            height: 550px;
+            border: 2px solid #eaeaea;
+            border-radius: 12px;
             overflow: hidden;
             background: #f8f9fa;
+            position: relative;
         }
-
-        /* Info Panel */
+        
+        /* Loading State */
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #283593;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading p {
+            font-size: 1.2rem;
+            color: #283593;
+            font-weight: 600;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Info Section */
         .info-section {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
             padding: 25px;
             display: flex;
             flex-direction: column;
+            min-height: 650px;
         }
-
+        
         .info-tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 15px;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 20px;
         }
-
+        
         .info-tab {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: none;
             border: none;
             color: #666;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s ease;
+            font-size: 1rem;
         }
-
+        
         .info-tab.active {
             background: #283593;
             color: white;
         }
-
+        
         .info-tab:hover:not(.active) {
             background: #f0f0f0;
+            transform: translateY(-2px);
         }
-
+        
+        /* Country List */
         #country-list {
             flex: 1;
             overflow-y: auto;
             padding-right: 10px;
         }
-
+        
+        /* Scrollbar Styling */
+        #country-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #country-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        #country-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        #country-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
         /* Country Grid */
         .country-grid {
             display: grid;
-            gap: 15px;
+            gap: 20px;
         }
-
+        
         .country-card {
             background: white;
-            border-left: 4px solid;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 6px solid;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
         }
-
+        
         .country-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-
+        
+        .country-card:active {
+            transform: translateX(4px);
+        }
+        
         .country-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
-
+        
         .country-name {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: #283593;
+            margin: 0;
         }
-
+        
         .country-year {
             background: #ffd700;
             color: #283593;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .country-details {
+            padding: 5px 15px;
+            border-radius: 15px;
             font-size: 0.9rem;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .country-details strong {
-            color: #444;
-        }
-
-        /* Details Panel */
-        #country-details {
-            display: none;
-            margin-top: 25px;
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .details-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(40, 53, 147, 0.2);
-        }
-
-        .details-title {
-            font-size: 1.8rem;
-            color: #283593;
             font-weight: 700;
         }
-
-        .details-year {
-            background: linear-gradient(45deg, #283593, #5c6bc0);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 1.1rem;
+        
+        .country-info {
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
         }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+        
+        .country-info strong {
+            color: #283593;
         }
-
-        .detail-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .detail-label {
+        
+        .notes {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
             font-size: 0.9rem;
             color: #666;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-style: italic;
         }
-
-        .detail-value {
-            font-size: 1.1rem;
-            color: #283593;
-            font-weight: 600;
-        }
-
-        .historical-notes {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .notes-title {
-            color: #283593;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Tooltip */
-        #country-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.85);
-            color: white;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            pointer-events: none;
-            z-index: 1000;
-            display: none;
-            max-width: 300px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .tooltip-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ffd700;
-            margin-bottom: 5px;
-        }
-
-        .tooltip-content {
-            line-height: 1.5;
-        }
-
+        
         /* Footer */
         .main-footer {
             background: #1a237e;
             color: white;
-            padding: 25px 40px;
+            padding: 30px 40px;
             text-align: center;
-            border-top: 3px solid #ffd700;
+            border-top: 5px solid #ffd700;
         }
-
+        
         .footer-nav {
             display: flex;
             justify-content: center;
             gap: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
-
+        
         .footer-nav a {
             color: white;
             text-decoration: none;
-            font-weight: 600;
-            padding: 8px 20px;
-            border-radius: 6px;
+            font-weight: 700;
+            padding: 10px 25px;
+            border-radius: 8px;
             transition: all 0.3s ease;
-        }
-
-        .footer-nav a:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
         }
-
+        
+        .footer-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
         .footer-info {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            line-height: 1.6;
-            max-width: 800px;
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            max-width: 900px;
             margin: 0 auto;
         }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .timeline-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .era-info {
-                text-align: center;
-            }
-        }
-
+        
+        /* Responsive */
         @media (max-width: 768px) {
             .main-header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             #current-year {
-                font-size: 2.5rem;
+                font-size: 2.8rem;
             }
             
-            .nav-buttons {
-                flex-direction: column;
+            .nav-btn {
+                min-width: 100%;
             }
             
             .map-legend {
                 justify-content: center;
             }
             
-            .details-grid {
-                grid-template-columns: 1fr;
+            .main-content {
+                padding: 20px;
             }
         }
-
-        /* Loading State */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 500px;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #283593;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        /* Print Styles */
+        @media print {
+            .nav-buttons, .info-tabs, .footer-nav {
+                display: none;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .app-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
@@ -582,7 +559,7 @@
             <p class="header-subtitle">
                 Interactive visualization of European historical borders starting from 
                 <span class="header-highlight">1800</span>. 
-                Explore how nations evolved through time. Click countries for historical details.
+                Explore how nations evolved through the centuries.
             </p>
         </header>
 
@@ -591,7 +568,7 @@
             <div class="timeline-header">
                 <div class="year-display">
                     <div id="current-year">1800</div>
-                    <div class="year-label">STARTING YEAR</div>
+                    <div class="year-label">STARTING POINT</div>
                 </div>
                 <div class="era-info">
                     <div id="era-title">Europe in 1800</div>
@@ -617,13 +594,13 @@
 
             <div class="nav-buttons">
                 <button class="nav-btn btn-prev" id="prev-decade">
-                    <span>⬅</span> Previous Decade
+                    <span style="font-size: 1.3rem;">⬅</span> Previous Decade
                 </button>
                 <button class="nav-btn btn-1800" id="jump-1800">
                     🎯 Jump to 1800
                 </button>
                 <button class="nav-btn btn-next" id="next-decade">
-                    Next Decade <span>➡</span>
+                    Next Decade <span style="font-size: 1.3rem;">➡</span>
                 </button>
             </div>
         </section>
@@ -657,12 +634,6 @@
                         <p>Loading historical map data for 1800...</p>
                     </div>
                 </div>
-
-                <!-- Tooltip -->
-                <div id="country-tooltip">
-                    <div class="tooltip-title" id="tooltip-country">Country Name</div>
-                    <div class="tooltip-content" id="tooltip-content">Loading details...</div>
-                </div>
             </div>
 
             <!-- Info Panel -->
@@ -670,41 +641,41 @@
                 <div class="info-tabs">
                     <button class="info-tab active" data-tab="countries">🇪🇺 European Powers</button>
                     <button class="info-tab" data-tab="timeline">📜 Timeline</button>
-                    <button class="info-tab" data-tab="stats">📊 Statistics</button>
+                    <button class="info-tab" data-tab="about">ℹ️ About</button>
                 </div>
 
                 <div id="country-list">
                     <!-- Countries will be loaded here by JavaScript -->
                     <div class="country-grid">
-                        <!-- Example country card (will be replaced by JS) -->
+                        <!-- Initial placeholder content -->
                         <div class="country-card" style="border-color: #1f77b4">
                             <div class="country-header">
                                 <div class="country-name">French Republic</div>
                                 <div class="country-year">1800</div>
                             </div>
-                            <div class="country-details">
+                            <div class="country-info">
                                 <p><strong>Ruler:</strong> Napoleon Bonaparte</p>
                                 <p><strong>Capital:</strong> Paris</p>
-                                <p>Revolutionary state, expanding under Napoleon's leadership after the French Revolution.</p>
+                                <p><strong>Area:</strong> 550,000 km²</p>
+                                <p><strong>Population:</strong> 29 million</p>
+                                <p class="notes">Revolutionary state, expanding under Napoleon's leadership</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Country Details Panel -->
-                <div id="country-details">
-                    <!-- Will be populated by JavaScript -->
-                </div>
+                <!-- Country Details Panel (will be populated by JS) -->
+                <div id="country-details"></div>
             </div>
         </main>
 
         <!-- Footer -->
         <footer class="main-footer">
             <nav class="footer-nav">
-                <a href="index.html" class="active">🗺️ Interactive Map</a>
+                <a href="index.html">🗺️ Interactive Map</a>
                 <a href="about.html">📖 About Project</a>
-                <a href="#" id="export-map">💾 Export Map</a>
-                <a href="#" id="fullscreen">🔍 Fullscreen</a>
+                <a href="https://github.com/r293239/ChronoMap" target="_blank">💻 GitHub</a>
+                <a href="#" id="fullscreen-toggle">🔍 Fullscreen</a>
             </nav>
             <p class="footer-info">
                 ChronoMap Project • Historical border visualization tool • 
@@ -717,9 +688,24 @@
     <!-- JavaScript -->
     <script src="js/SVGMapLoader.js"></script>
     <script>
-        // Initialize the application
+        // Global reference to map loader
+        let mapLoader = null;
+        
+        // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('ChronoMap initialized');
+            console.log('ChronoMap: Initializing application...');
+            
+            // Initialize map loader
+            try {
+                mapLoader = new SVGMapLoader();
+                mapLoader.initialize();
+            } catch (error) {
+                console.error('Failed to create SVGMapLoader:', error);
+                document.getElementById('map-container').innerHTML = 
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h3>Critical Error</h3><p>' + error.message + '</p></div>';
+                return;
+            }
             
             // Tab switching
             const tabs = document.querySelectorAll('.info-tab');
@@ -727,66 +713,161 @@
                 tab.addEventListener('click', function() {
                     tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
+                    
+                    // Show appropriate content
+                    const tabType = this.dataset.tab;
+                    console.log('Switched to tab:', tabType);
+                    
+                    if (tabType === 'timeline') {
+                        showTimelineTab();
+                    } else if (tabType === 'about') {
+                        showAboutTab();
+                    }
+                    // 'countries' tab is shown by default
                 });
             });
             
             // Navigation buttons
             document.getElementById('prev-decade').addEventListener('click', function() {
-                const yearSlider = document.getElementById('year-slider');
-                const currentYear = parseInt(yearSlider.value);
-                yearSlider.value = currentYear - 10;
-                updateYearDisplay();
+                if (mapLoader) mapLoader.prevDecade();
             });
             
             document.getElementById('next-decade').addEventListener('click', function() {
-                const yearSlider = document.getElementById('year-slider');
-                const currentYear = parseInt(yearSlider.value);
-                yearSlider.value = currentYear + 10;
-                updateYearDisplay();
+                if (mapLoader) mapLoader.nextDecade();
             });
             
             document.getElementById('jump-1800').addEventListener('click', function() {
-                const yearSlider = document.getElementById('year-slider');
-                yearSlider.value = 1800;
-                updateYearDisplay();
-                alert('Jumped back to starting year: 1800');
+                if (mapLoader) mapLoader.jumpToYear(1800);
+                this.innerHTML = '🎯 Jumped to 1800!';
+                setTimeout(() => {
+                    this.innerHTML = '🎯 Jump to 1800';
+                }, 1500);
             });
             
             // Year slider
             const yearSlider = document.getElementById('year-slider');
-            yearSlider.addEventListener('input', updateYearDisplay);
+            let sliderTimeout = null;
             
-            function updateYearDisplay() {
-                const year = yearSlider.value;
+            yearSlider.addEventListener('input', function() {
+                // Update display immediately
+                const year = this.value;
                 document.getElementById('current-year').textContent = year;
                 document.getElementById('map-year').textContent = year;
                 
                 // Update slider current label
-                document.querySelector('.slider-current').textContent = 
-                    year === '1800' ? '1800 (Starting Point)' : year;
+                const currentLabel = document.querySelector('.slider-current');
+                if (currentLabel) {
+                    currentLabel.textContent = year === '1800' ? 
+                        '1800 (Starting Point)' : year;
+                }
+                
+                // Debounce the actual map update
+                clearTimeout(sliderTimeout);
+                sliderTimeout = setTimeout(() => {
+                    if (mapLoader) {
+                        mapLoader.jumpToYear(parseInt(year));
+                    }
+                }, 300);
+            });
+            
+            // Fullscreen toggle
+            document.getElementById('fullscreen-toggle').addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleFullscreen();
+            });
+            
+            // Tab content functions
+            function showTimelineTab() {
+                const container = document.getElementById('country-list');
+                container.innerHTML = `
+                    <div style="padding: 20px;">
+                        <h3 style="color: #283593; margin-bottom: 20px;">📅 Historical Timeline</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="background: linear-gradient(90deg, #e3f2fd, #bbdefb); padding: 15px; border-radius: 8px; border-left: 5px solid #2196f3;">
+                                <h4 style="margin: 0 0 5px 0;">1789 - French Revolution</h4>
+                                <p style="margin: 0; color: #555;">Start of the French Revolution, end of absolute monarchy</p>
+                            </div>
+                            <div style="background: linear-gradient(90deg, #fce4ec, #f8bbd9); padding: 15px; border-radius: 8px; border-left: 5px solid #e91e63;">
+                                <h4 style="margin: 0 0 5px 0;">1800 - Current View</h4>
+                                <p style="margin: 0; color: #555;">After French Revolutionary Wars, Napoleon's rise to power</p>
+                            </div>
+                            <div style="background: linear-gradient(90deg, #f3e5f5, #e1bee7); padding: 15px; border-radius: 8px; border-left: 5px solid #9c27b0;">
+                                <h4 style="margin: 0 0 5px 0;">1815 - Congress of Vienna</h4>
+                                <p style="margin: 0; color: #555;">Post-Napoleonic settlement, restoration of monarchies</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
             
-            // Fullscreen mode
-            document.getElementById('fullscreen').addEventListener('click', function() {
-                const elem = document.querySelector('.map-section');
+            function showAboutTab() {
+                const container = document.getElementById('country-list');
+                container.innerHTML = `
+                    <div style="padding: 20px;">
+                        <h3 style="color: #283593; margin-bottom: 20px;">ℹ️ About ChronoMap</h3>
+                        <div style="line-height: 1.7; color: #444;">
+                            <p><strong>ChronoMap</strong> is an interactive visualization tool for exploring historical borders.</p>
+                            <p>Starting from 1800, you can see how European nations evolved through time.</p>
+                            
+                            <h4 style="margin-top: 25px; color: #283593;">Features:</h4>
+                            <ul style="margin-left: 20px; margin-bottom: 25px;">
+                                <li>Interactive historical maps from 1800 onward</li>
+                                <li>Country details with rulers, capitals, and population</li>
+                                <li>Timeline slider to navigate through centuries</li>
+                                <li>Historical context and notes for each period</li>
+                            </ul>
+                            
+                            <h4 style="margin-top: 25px; color: #283593;">How to Use:</h4>
+                            <ol style="margin-left: 20px;">
+                                <li>Use the slider or buttons to change the year</li>
+                                <li>Click on any colored country to see details</li>
+                                <li>Hover over countries to see quick information</li>
+                                <li>Use the tabs to switch between different views</li>
+                            </ol>
+                            
+                            <div style="margin-top: 30px; padding: 15px; background: #f0f7ff; border-radius: 8px; border-left: 4px solid #283593;">
+                                <p style="margin: 0;"><strong>Note:</strong> This project uses SVG maps from Wikimedia Commons and historical data from various sources.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Fullscreen function
+            function toggleFullscreen() {
+                const elem = document.documentElement;
+                
                 if (!document.fullscreenElement) {
                     if (elem.requestFullscreen) {
                         elem.requestFullscreen();
                     }
+                    document.getElementById('fullscreen-toggle').innerHTML = '📱 Exit Fullscreen';
                 } else {
                     if (document.exitFullscreen) {
                         document.exitFullscreen();
                     }
+                    document.getElementById('fullscreen-toggle').innerHTML = '🔍 Fullscreen';
+                }
+            }
+            
+            // Handle fullscreen change
+            document.addEventListener('fullscreenchange', function() {
+                const toggleBtn = document.getElementById('fullscreen-toggle');
+                if (document.fullscreenElement) {
+                    toggleBtn.innerHTML = '📱 Exit Fullscreen';
+                } else {
+                    toggleBtn.innerHTML = '🔍 Fullscreen';
                 }
             });
             
-            // Initialize the SVG loader
+            // Show welcome message
             setTimeout(() => {
-                const loader = new SVGMapLoader();
-                loader.initialize();
-                
-                // Hide loading spinner
-                document.querySelector('.loading').style.display = 'none';
+                console.log('ChronoMap ready!');
+                console.log('Available commands:');
+                console.log('- mapLoader.jumpToYear(year)');
+                console.log('- mapLoader.nextDecade()');
+                console.log('- mapLoader.prevDecade()');
+                console.log('- mapLoader.showCountryDetails(countryId)');
             }, 1000);
         });
     </script>
