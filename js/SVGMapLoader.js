@@ -153,7 +153,7 @@ class SVGMapLoader {
   }
 
   async loadWorldMap() {
-    this.log("Loading YOUR world.svg file...");
+    this.log("Loading YOUR world-map.svg file...");
     
     const container = document.getElementById('map-container');
     if (!container) {
@@ -166,7 +166,7 @@ class SVGMapLoader {
       container.innerHTML = '';
       
       // Load YOUR world.svg file
-      const response = await fetch('maps/world.svg');
+      const response = await fetch('maps/world-map.svg');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
