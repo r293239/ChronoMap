@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>European Borders Timeline - 1800 to Present</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-globe-europe"></i> European Borders Through History</h1>
+            <p class="subtitle">Watch the transformation of Europe from 1800 to present day</p>
+        </div>
+    </header>
+
+    <main class="container main-container">
+        <div class="timeline-controls">
+            <div class="year-display">
+                <span class="year-label">Year:</span>
+                <span id="current-year" class="year-value">1800</span>
+            </div>
+            
+            <div class="slider-container">
+                <input type="range" id="year-slider" class="year-slider" min="1800" max="2023" value="1800" step="1">
+                <div class="slider-labels">
+                    <span>1800</span>
+                    <span>1900</span>
+                    <span>2023</span>
+                </div>
+            </div>
+            
+            <div class="playback-controls">
+                <button id="play-btn" class="control-btn" title="Play animation">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button id="pause-btn" class="control-btn" title="Pause animation">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <button id="reset-btn" class="control-btn" title="Reset to 1800">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <div class="speed-control">
+                    <label for="speed-slider">Speed:</label>
+                    <input type="range" id="speed-slider" min="1" max="10" value="3">
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map" class="map">
+                <!-- SVG map will be inserted here by JavaScript -->
+                <div class="map-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading map...</p>
+                </div>
+            </div>
+            <div class="map-info">
+                <h3><i class="fas fa-info-circle"></i> Map Information</h3>
+                <p id="map-year-info">Displaying Europe in <strong>1800</strong></p>
+                <p id="country-count">Countries/States: <span id="country-count-value">Loading...</span></p>
+                <div id="historical-event" class="historical-event">
+                    <h4><i class="fas fa-landmark"></i> Historical Context</h4>
+                    <p id="event-text">Loading historical data...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panels">
+            <div class="panel">
+                <h3><i class="fas fa-history"></i> Historical Period</h3>
+                <div id="period-indicator" class="period-indicator napoleonic">
+                    <span class="period-name">Napoleonic Era</span>
+                    <span class="period-years">1799-1815</span>
+                </div>
+                <p id="period-description">Europe is dominated by the French Empire under Napoleon Bonaparte, with many traditional borders being redrawn.</p>
+            </div>
+            
+            <div class="panel">
+                <h3><i class="fas fa-flag"></i> Key States (1800)</h3>
+                <ul id="key-states" class="states-list">
+                    <li><span class="country-color" style="background-color: #4e79a7;"></span> French Empire</li>
+                    <li><span class="country-color" style="background-color: #f28e2c;"></span> Austrian Empire</li>
+                    <li><span class="country-color" style="background-color: #e15759;"></span> Russian Empire</li>
+                    <li><span class="country-color" style="background-color: #76b7b2;"></span> United Kingdom</li>
+                    <li><span class="country-color" style="background-color: #59a14f;"></span> Ottoman Empire</li>
+                    <li><span class="country-color" style="background-color: #edc949;"></span> Prussia</li>
+                </ul>
+            </div>
+            
+            <div class="panel">
+                <h3><i class="fas fa-book"></i> How to Use</h3>
+                <ol class="instructions">
+                    <li>Drag the slider to explore different years</li>
+                    <li>Click <i class="fas fa-play"></i> to animate changes over time</li>
+                    <li>Hover over countries to see their names</li>
+                    <li>Click on countries to see more information</li>
+                </ol>
+                <a href="about.html" class="about-link">
+                    <i class="fas fa-external-link-alt"></i> About & Data Sources
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>European Borders Timeline Project | Data visualization of historical border changes</p>
+            <p class="footer-links">
+                <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-code"></i> GitHub</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript files -->
+    <script src="js/map.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
