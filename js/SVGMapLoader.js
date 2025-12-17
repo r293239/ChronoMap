@@ -1,5 +1,5 @@
 // ============================================
-// SVGMapLoader.js - Fixed Version
+// SVGMapLoader.js - FINAL FIXED VERSION
 // ChronoMap - Historical Map Visualization
 // ============================================
 
@@ -98,43 +98,6 @@ const timelineData = [
         "area": "92,000 km²",
         "population": "3.1 million",
         "status": "Kingdom"
-      },
-      {
-        "name": "Kingdom of Sweden",
-        "svg_id": "se",
-        "color": "#17becf",
-        "capital": "Stockholm",
-        "ruler": "Gustav IV Adolf",
-        "notes": "Soon to lose Finland to Russia",
-        "area": "450,000 km²",
-        "population": "2.3 million",
-        "status": "Kingdom"
-      },
-      {
-        "name": "Denmark-Norway",
-        "svg_id": "dk",
-        "color": "#bcbd22",
-        "capital": "Copenhagen",
-        "ruler": "Christian VII",
-        "notes": "Personal union of Denmark and Norway",
-        "area": "487,000 km²",
-        "population": "1.9 million",
-        "status": "Dual Monarchy"
-      }
-    ]
-  },
-  {
-    "year": 1815,
-    "title": "Congress of Vienna",
-    "description": "Post-Napoleonic European settlement",
-    "countries": [
-      {
-        "name": "Kingdom of France",
-        "svg_id": "fr",
-        "color": "#aec7e8",
-        "capital": "Paris",
-        "ruler": "Louis XVIII",
-        "notes": "Bourbon Restoration"
       }
     ]
   }
@@ -145,22 +108,17 @@ class SVGMapLoader {
     this.currentYear = 1800;
     this.countryData = null;
     this.isLoading = false;
-    this.debugMode = true; // Set to false in production
+    this.debugMode = true;
   }
 
   log(message, data = null) {
     if (this.debugMode) {
-      if (data) {
-        console.log(`[ChronoMap] ${message}`, data);
-      } else {
-        console.log(`[ChronoMap] ${message}`);
-      }
+      console.log(`[ChronoMap] ${message}`, data || '');
     }
   }
 
   error(message, error = null) {
     console.error(`[ChronoMap ERROR] ${message}`, error || '');
-    this.showError(message);
   }
 
   async initialize() {
@@ -172,8 +130,8 @@ class SVGMapLoader {
       // Step 1: Load the SVG map
       await this.loadWorldMap();
       
-      // Step 2: Load timeline data
-      await this.loadTimelineData();
+      // Step 2: Load timeline data (FIXED - no async/await needed)
+      this.loadTimelineData();
       
       // Step 3: Apply 1800 styling
       this.applyYearStyling(1800);
@@ -204,56 +162,38 @@ class SVGMapLoader {
     // Try multiple possible paths
     const paths = [
       'maps/world.svg',
-      './maps/world.svg',
-      '/maps/world.svg'
+      './maps/world.svg'
     ];
-    
-    let svgLoaded = false;
     
     for (const path of paths) {
       try {
         this.log(`Trying to load SVG from: ${path}`);
         const response = await fetch(path);
         
-        if (!response.ok) {
-          this.log(`Path ${path} failed: ${response.status}`);
-          continue;
+        if (response.ok) {
+          const svgText = await response.text();
+          container.innerHTML = svgText;
+          this.log(`SVG loaded successfully from: ${path}`);
+          
+          // Reset all countries to light gray
+          const allPaths = container.querySelectorAll('path');
+          allPaths.forEach(el => {
+            el.style.fill = '#f0f0f0';
+            el.style.stroke = '#999';
+            el.style.strokeWidth = '0.5px';
+            el.style.cursor = 'default';
+            el.style.transition = 'all 0.3s ease';
+          });
+          
+          return; // Success, exit function
         }
-        
-        const svgText = await response.text();
-        
-        // Basic validation
-        if (!svgText.includes('<svg') || !svgText.includes('</svg>')) {
-          this.log(`Path ${path} returned invalid SVG`);
-          continue;
-        }
-        
-        container.innerHTML = svgText;
-        this.log(`SVG loaded successfully from: ${path}`);
-        svgLoaded = true;
-        
-        // Reset all countries to light gray
-        const allPaths = container.querySelectorAll('path, g');
-        allPaths.forEach(el => {
-          el.style.fill = '#f0f0f0';
-          el.style.stroke = '#999';
-          el.style.strokeWidth = '0.5px';
-          el.style.cursor = 'default';
-          el.style.transition = 'all 0.3s ease';
-        });
-        
-        break;
-        
       } catch (error) {
         this.log(`Error loading from ${path}:`, error.message);
       }
     }
     
-    if (!svgLoaded) {
-      // Create a fallback map
-      this.createFallbackMap();
-      this.log("Using fallback map");
-    }
+    // If we get here, all paths failed
+    this.createFallbackMap();
   }
 
   createFallbackMap() {
@@ -263,11 +203,11 @@ class SVGMapLoader {
         <rect width="800" height="500" fill="#e8f4f8"/>
         
         <!-- Simplified Europe -->
-        <path id="fr" d="M150,250 L250,200 L300,300 L200,320 Z" fill="#1f77b4" stroke="#000" class="country"/>
-        <path id="de" d="M250,200 L400,180 L450,280 L300,300 Z" fill="#2ca02c" stroke="#000" class="country"/>
-        <path id="es" d="M100,300 L150,350 L200,400 L80,380 Z" fill="#e377c2" stroke="#000" class="country"/>
-        <path id="it" d="M300,300 L350,350 L380,400 L320,380 Z" fill="#d62728" stroke="#000" class="country"/>
-        <path id="gb" d="M200,100 L250,80 L280,150 L230,160 Z" fill="#8c564b" stroke="#000" class="country"/>
+        <path id="fr" d="M150,250 L250,200 L300,300 L200,320 Z" fill="#1f77b4" stroke="#000"/>
+        <path id="de" d="M250,200 L400,180 L450,280 L300,300 Z" fill="#2ca02c" stroke="#000"/>
+        <path id="es" d="M100,300 L150,350 L200,400 L80,380 Z" fill="#e377c2" stroke="#000"/>
+        <path id="it" d="M300,300 L350,350 L380,400 L320,380 Z" fill="#d62728" stroke="#000"/>
+        <path id="gb" d="M200,100 L250,80 L280,150 L230,160 Z" fill="#8c564b" stroke="#000"/>
         
         <!-- Labels -->
         <text x="200" y="280" font-size="12" fill="white" text-anchor="middle">France</text>
@@ -275,15 +215,13 @@ class SVGMapLoader {
         <text x="140" y="370" font-size="12" fill="white" text-anchor="middle">Spain</text>
         <text x="340" y="340" font-size="12" fill="white" text-anchor="middle">Italy</text>
         <text x="240" y="120" font-size="12" fill="white" text-anchor="middle">UK</text>
-        
-        <text x="400" y="480" font-size="14" fill="#666" text-anchor="middle">
-          Simplified European Map - Replace with maps/world.svg
-        </text>
       </svg>
     `;
+    this.log("Using fallback map");
   }
 
-  async loadTimelineData() {
+  // FIXED: Removed async - data is already available
+  loadTimelineData() {
     this.log("Loading timeline data...");
     
     // Use the embedded timelineData
@@ -316,35 +254,23 @@ class SVGMapLoader {
   applyYearStyling(year) {
     this.log(`Applying styling for year ${year}`);
     
-    // Find data for this year
-    const yearData = timelineData.find(item => item.year === year);
-    if (!yearData) {
-      this.log(`No data found for year ${year}`);
-      return;
-    }
-    
-    this.currentYear = year;
-    this.countryData = yearData;
-    
     // Update UI elements
     document.getElementById('current-year').textContent = year;
-    document.getElementById('era-title').textContent = yearData.title;
-    document.getElementById('era-description').textContent = yearData.description;
+    document.getElementById('era-title').textContent = this.countryData.title;
+    document.getElementById('era-description').textContent = this.countryData.description;
     document.getElementById('map-year').textContent = year;
     
     // Reset all to gray first
-    const allCountries = document.querySelectorAll('.country, path, g[id]');
+    const allCountries = document.querySelectorAll('path');
     allCountries.forEach(el => {
-      if (el.id && el.id.length === 2) { // Only reset country elements
-        el.style.fill = '#f0f0f0';
-        el.style.stroke = '#999';
-        el.style.strokeWidth = '0.5px';
-      }
+      el.style.fill = '#f0f0f0';
+      el.style.stroke = '#999';
+      el.style.strokeWidth = '0.5px';
     });
     
     // Apply colors to countries in the data
     let coloredCount = 0;
-    yearData.countries.forEach(country => {
+    this.countryData.countries.forEach(country => {
       const element = document.getElementById(country.svg_id);
       if (element) {
         element.style.fill = country.color;
@@ -358,14 +284,8 @@ class SVGMapLoader {
         element.dataset.ruler = country.ruler;
         element.dataset.year = year;
         element.dataset.notes = country.notes || '';
-        element.dataset.area = country.area || '';
-        element.dataset.population = country.population || '';
-        element.dataset.status = country.status || '';
         
         coloredCount++;
-        this.log(`Styled ${country.name} (${country.svg_id})`, { color: country.color });
-      } else {
-        this.log(`Country element not found: ${country.svg_id} (${country.name})`);
       }
     });
     
@@ -377,10 +297,7 @@ class SVGMapLoader {
 
   updateCountryList() {
     const container = document.getElementById('country-list');
-    if (!container) {
-      this.log("Country list container not found");
-      return;
-    }
+    if (!container) return;
     
     const europeanCountries = this.countryData.countries;
     
@@ -397,7 +314,6 @@ class SVGMapLoader {
               <p><strong>Capital:</strong> ${country.capital}</p>
               ${country.area ? `<p><strong>Area:</strong> ${country.area}</p>` : ''}
               ${country.population ? `<p><strong>Population:</strong> ${country.population}</p>` : ''}
-              ${country.notes ? `<p class="notes">${country.notes}</p>` : ''}
             </div>
           </div>
         `).join('')}
@@ -414,7 +330,7 @@ class SVGMapLoader {
     // Mouseover effect
     container.addEventListener('mouseover', (e) => {
       const target = e.target;
-      if (target.dataset.countryName) {
+      if (target.tagName === 'PATH' && target.dataset.countryName) {
         this.highlightCountry(target);
       }
     });
@@ -422,7 +338,7 @@ class SVGMapLoader {
     // Mouseout effect
     container.addEventListener('mouseout', (e) => {
       const target = e.target;
-      if (target.dataset.countryName) {
+      if (target.tagName === 'PATH' && target.dataset.countryName) {
         this.unhighlightCountry(target);
       }
     });
@@ -430,269 +346,126 @@ class SVGMapLoader {
     // Click for details
     container.addEventListener('click', (e) => {
       const target = e.target;
-      if (target.dataset.countryName) {
+      if (target.tagName === 'PATH' && target.dataset.countryName) {
         this.showCountryDetails(target.id);
       }
     });
     
-    // Make mapLoader globally available for HTML onclick events
+    // Make mapLoader globally available
     window.mapLoader = this;
-    
-    this.log("Interactions setup complete");
   }
 
   highlightCountry(element) {
-    const originalColor = element.style.fill;
-    
-    // Store original for restoration
-    if (!element.dataset.originalColor) {
-      element.dataset.originalColor = originalColor;
-    }
-    
-    // Apply highlight
-    element.style.filter = 'brightness(1.2) drop-shadow(0 0 5px rgba(0,0,0,0.3))';
+    element.style.filter = 'brightness(1.2)';
     element.style.strokeWidth = '2px';
-    element.style.stroke = '#000';
     
-    // Show tooltip
-    this.showTooltip(
-      element.dataset.countryName,
-      element.dataset.ruler,
-      element.dataset.capital,
-      element
-    );
+    // Show simple tooltip
+    const tooltip = document.createElement('div');
+    tooltip.style.cssText = `
+      position: absolute;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      z-index: 1000;
+      pointer-events: none;
+    `;
+    tooltip.innerHTML = `<strong>${element.dataset.countryName}</strong><br>${element.dataset.ruler}`;
+    tooltip.id = 'temp-tooltip';
+    
+    const rect = element.getBoundingClientRect();
+    tooltip.style.left = (rect.left + rect.width/2) + 'px';
+    tooltip.style.top = (rect.top - 40) + 'px';
+    tooltip.style.transform = 'translateX(-50%)';
+    
+    document.body.appendChild(tooltip);
+    
+    // Store reference to remove later
+    element._tooltip = tooltip;
   }
 
   unhighlightCountry(element) {
-    // Restore original style
     element.style.filter = 'none';
     element.style.strokeWidth = '1px';
-    element.style.stroke = '#333';
     
-    // Hide tooltip
-    this.hideTooltip();
-  }
-
-  showTooltip(countryName, ruler, capital, element) {
-    let tooltip = document.getElementById('country-tooltip');
-    
-    // Create tooltip if it doesn't exist
-    if (!tooltip) {
-      tooltip = document.createElement('div');
-      tooltip.id = 'country-tooltip';
-      tooltip.style.cssText = `
-        position: absolute;
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        pointer-events: none;
-        z-index: 1000;
-        display: none;
-        max-width: 300px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.1);
-        backdrop-filter: blur(5px);
-      `;
-      document.body.appendChild(tooltip);
-    }
-    
-    // Position tooltip near cursor
-    const rect = element.getBoundingClientRect();
-    tooltip.style.left = (rect.left + rect.width / 2) + 'px';
-    tooltip.style.top = (rect.top - 10) + 'px';
-    tooltip.style.transform = 'translate(-50%, -100%)';
-    
-    // Set content
-    tooltip.innerHTML = `
-      <div style="font-size: 16px; font-weight: bold; color: #ffd700; margin-bottom: 5px;">
-        ${countryName}
-      </div>
-      <div style="margin-bottom: 3px;"><strong>Ruler:</strong> ${ruler}</div>
-      <div><strong>Capital:</strong> ${capital}</div>
-      <div style="margin-top: 5px; font-size: 12px; opacity: 0.8;">
-        Click for details
-      </div>
-    `;
-    
-    tooltip.style.display = 'block';
-  }
-
-  hideTooltip() {
-    const tooltip = document.getElementById('country-tooltip');
-    if (tooltip) {
-      tooltip.style.display = 'none';
+    // Remove tooltip
+    if (element._tooltip) {
+      element._tooltip.remove();
+      delete element._tooltip;
     }
   }
 
   showCountryDetails(countryId) {
-    this.log(`Showing details for country: ${countryId}`);
-    
-    // Find the country element
     const element = document.getElementById(countryId);
-    if (!element) {
-      this.error(`Country element not found: ${countryId}`);
-      return;
-    }
+    if (!element) return;
     
-    // Find country data
     const countryData = this.countryData.countries.find(c => c.svg_id === countryId);
-    if (!countryData) {
-      this.error(`Country data not found for: ${countryId}`);
-      return;
-    }
+    if (!countryData) return;
     
-    // Get or create details panel
     let detailsPanel = document.getElementById('country-details');
     if (!detailsPanel) {
       detailsPanel = document.createElement('div');
       detailsPanel.id = 'country-details';
-      detailsPanel.style.cssText = `
-        display: none;
-        margin-top: 25px;
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-        border-radius: 10px;
-        padding: 25px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255, 215, 0, 0.3);
-      `;
-      
-      const infoSection = document.querySelector('.info-section');
-      if (infoSection) {
-        infoSection.appendChild(detailsPanel);
-      } else {
-        document.querySelector('.main-content').appendChild(detailsPanel);
-      }
+      document.querySelector('.info-section').appendChild(detailsPanel);
     }
     
-    // Populate details
     detailsPanel.innerHTML = `
-      <div class="details-header">
-        <h2 style="color: ${countryData.color}; margin: 0;">${countryData.name}</h2>
-        <span style="background: linear-gradient(45deg, #283593, #5c6bc0); 
-                     color: white; padding: 8px 20px; border-radius: 20px; 
-                     font-weight: 600;">${this.currentYear}</span>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
-        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Ruler</div>
-          <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${countryData.ruler}</div>
+      <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 5px solid ${countryData.color}">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h3 style="margin: 0; color: ${countryData.color}">${countryData.name}</h3>
+          <span style="background: #283593; color: white; padding: 5px 15px; border-radius: 15px;">${this.currentYear}</span>
         </div>
-        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Capital</div>
-          <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${countryData.capital}</div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+          <div>
+            <strong>Ruler:</strong><br>${countryData.ruler}
+          </div>
+          <div>
+            <strong>Capital:</strong><br>${countryData.capital}
+          </div>
+          ${countryData.area ? `<div><strong>Area:</strong><br>${countryData.area}</div>` : ''}
+          ${countryData.population ? `<div><strong>Population:</strong><br>${countryData.population}</div>` : ''}
         </div>
-        ${countryData.area ? `
-        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Area</div>
-          <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${countryData.area}</div>
-        </div>` : ''}
-        ${countryData.population ? `
-        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Population</div>
-          <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${countryData.population}</div>
-        </div>` : ''}
-      </div>
-      
-      ${countryData.notes ? `
-      <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: #283593; margin-bottom: 10px;">Historical Context</h3>
-        <p style="line-height: 1.6; color: #444;">${countryData.notes}</p>
-      </div>` : ''}
-      
-      <div style="margin-top: 20px; text-align: center;">
-        <button onclick="document.getElementById('country-details').style.display='none'" 
-                style="padding: 10px 25px; background: #283593; color: white; 
-                       border: none; border-radius: 5px; cursor: pointer;">
-          Close Details
+        ${countryData.notes ? `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;"><strong>Historical Context:</strong><br>${countryData.notes}</div>` : ''}
+        <button onclick="document.getElementById('country-details').innerHTML=''" 
+                style="margin-top: 15px; padding: 8px 20px; background: #283593; color: white; border: none; border-radius: 5px; cursor: pointer;">
+          Close
         </button>
       </div>
     `;
-    
-    detailsPanel.style.display = 'block';
   }
 
   updateUI() {
-    // Update year slider
     const yearSlider = document.getElementById('year-slider');
     if (yearSlider) {
       yearSlider.value = this.currentYear;
     }
-    
-    // Update slider label
-    const currentLabel = document.querySelector('.slider-current');
-    if (currentLabel) {
-      currentLabel.textContent = this.currentYear === 1800 ? 
-        '1800 (Starting Point)' : this.currentYear.toString();
-    }
   }
 
   showLoading(show) {
-    this.isLoading = show;
-    
     const loadingEl = document.querySelector('.loading');
-    const mapContainer = document.getElementById('map-container');
-    
     if (loadingEl) {
       loadingEl.style.display = show ? 'flex' : 'none';
-    }
-    
-    if (mapContainer && show) {
-      // Show loading overlay
-      mapContainer.style.opacity = '0.5';
-      mapContainer.style.pointerEvents = 'none';
-    } else if (mapContainer) {
-      mapContainer.style.opacity = '1';
-      mapContainer.style.pointerEvents = 'auto';
-    }
-  }
-
-  showError(message) {
-    const container = document.getElementById('map-container');
-    if (container) {
-      container.innerHTML = `
-        <div style="padding: 40px; text-align: center; color: #d32f2f;">
-          <h3 style="margin-bottom: 15px;">⚠️ Error Loading Map</h3>
-          <p style="margin-bottom: 20px;">${message}</p>
-          <button onclick="location.reload()" 
-                  style="padding: 10px 20px; background: #283593; 
-                         color: white; border: none; border-radius: 5px; 
-                         cursor: pointer;">
-            Reload Page
-          </button>
-        </div>
-      `;
     }
   }
 
   // Public methods for UI controls
   jumpToYear(year) {
-    if (year < 1400 || year > 2025) {
-      this.error(`Invalid year: ${year}. Must be between 1400 and 2025.`);
-      return;
-    }
-    
     this.log(`Jumping to year ${year}`);
     this.applyYearStyling(year);
   }
 
   nextDecade() {
     const nextYear = this.currentYear + 10;
-    if (nextYear <= 2025) {
-      this.jumpToYear(nextYear);
-    }
+    this.jumpToYear(nextYear);
   }
 
   prevDecade() {
     const prevYear = this.currentYear - 10;
-    if (prevYear >= 1400) {
-      this.jumpToYear(prevYear);
-    }
+    this.jumpToYear(prevYear);
   }
 }
 
 // Make globally available
 window.SVGMapLoader = SVGMapLoader;
-console.log("SVGMapLoader loaded. Use: const loader = new SVGMapLoader(); loader.initialize();");
+console.log("SVGMapLoader loaded successfully!");
