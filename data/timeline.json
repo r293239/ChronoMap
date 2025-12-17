@@ -1,66 +1,77 @@
 {
-  "1800": {
-    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PR"],
-    "inactiveCountries": ["PL"],
-    "colors": {
-      "FR": "#4e79a7",  // France - blue
-      "GB": "#76b7b2",  // UK - teal
-      "AT": "#f28e2c",  // Austria - orange
-      "RU": "#e15759",  // Russia - red
-      "OT": "#59a14f",  // Ottoman - green
-      "DE": "#bab0ab",  // German - gray
-      "PR": "#edc949",  // Prussia - yellow
-      "ES": "#b07aa1",  // Spain - purple
-      "IT": "#ff9da7"   // Italy - pink
-    },
-    "events": ["Napoleonic Wars ongoing", "Holy Roman Empire exists"]
-  },
-  "1815": {
-    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PR", "PL"],
-    "inactiveCountries": [],
-    "colors": {
-      "FR": "#4e79a7",
-      "GB": "#76b7b2",
-      "AT": "#f28e2c",
-      "RU": "#e15759",
-      "OT": "#59a14f",
-      "DE": "#bab0ab",
-      "PR": "#edc949",
-      "PL": "#86bcb6",  // Poland appears
-      "ES": "#b07aa1",
-      "IT": "#ff9da7"
-    },
-    "events": ["Congress of Vienna", "Polish Congress Kingdom created"]
-  },
-  "1871": {
-    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "OT", "PL"],
-    "inactiveCountries": ["PR"],
-    "colors": {
-      "FR": "#4e79a7",
-      "GB": "#76b7b2",
-      "AT": "#f28e2c",
-      "RU": "#e15759",
-      "OT": "#59a14f",
-      "DE": "#3498db",  // Germany unified - brighter blue
-      "PL": "#86bcb6",
-      "ES": "#b07aa1",
-      "IT": "#ff9da7"
-    },
-    "events": ["German Unification", "Prussia becomes part of Germany"]
-  },
-  "1919": {
-    "activeCountries": ["GB", "FR", "ES", "IT", "DE", "AT", "RU", "PL"],
-    "inactiveCountries": ["OT"],
-    "colors": {
-      "FR": "#4e79a7",
-      "GB": "#76b7b2",
-      "AT": "#e74c3c",  // Austria-Hungary dissolved
-      "RU": "#c0392b",  // Soviet Russia
-      "DE": "#3498db",
-      "PL": "#86bcb6",
-      "ES": "#b07aa1",
-      "IT": "#ff9da7"
-    },
-    "events": ["Treaty of Versailles", "Ottoman Empire dissolved"]
-  }
+  "title": "European Borders Timeline",
+  "centerYear": 1800,
+  "periods": [
+    {
+      "year": 1800,
+      "title": "Europe in 1800",
+      "description": "After the French Revolutionary Wars, before Napoleon's major conquests",
+      "countries": [
+        {
+          "name": "French Republic",
+          "id": "france",
+          "color": "#1f77b4",
+          "svgPath": "M100,200L150,180L200,190...", // Your SVG path data
+          "capital": "Paris",
+          "ruler": "Napoleon Bonaparte (First Consul)"
+        },
+        {
+          "name": "Austrian Empire",
+          "id": "austria",
+          "color": "#ff7f0e",
+          "svgPath": "M300,250L350,240L400,260...",
+          "capital": "Vienna",
+          "ruler": "Francis II"
+        },
+        {
+          "name": "Kingdom of Prussia",
+          "id": "prussia",
+          "color": "#2ca02c",
+          "svgPath": "...",
+          "capital": "Berlin",
+          "ruler": "Frederick William III"
+        },
+        {
+          "name": "Russian Empire",
+          "id": "russia",
+          "color": "#d62728",
+          "svgPath": "...",
+          "capital": "Saint Petersburg",
+          "ruler": "Paul I"
+        },
+        {
+          "name": "Ottoman Empire",
+          "id": "ottoman",
+          "color": "#9467bd",
+          "svgPath": "...",
+          "capital": "Constantinople",
+          "ruler": "Selim III"
+        },
+        {
+          "name": "United Kingdom",
+          "id": "britain",
+          "color": "#8c564b",
+          "svgPath": "...",
+          "capital": "London",
+          "ruler": "George III"
+        },
+        {
+          "name": "Kingdom of Spain",
+          "id": "spain",
+          "color": "#e377c2",
+          "svgPath": "...",
+          "capital": "Madrid",
+          "ruler": "Charles IV"
+        },
+        {
+          "name": "Kingdom of Portugal",
+          "id": "portugal",
+          "color": "#7f7f7f",
+          "svgPath": "...",
+          "capital": "Lisbon",
+          "ruler": "Maria I"
+        }
+      ]
+    }
+  ]
 }
