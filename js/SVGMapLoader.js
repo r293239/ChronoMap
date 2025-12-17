@@ -133,6 +133,33 @@ class SVGMapLoader {
       
       // Step 2: Load timeline data
       this.loadTimelineData();
+      // In SVGMapLoader.js, in the loadTimelineData() method:
+loadTimelineData() {
+  console.log("📊 Loading timeline data from timeline.js...");
+  
+  // Check if timeline.js is loaded
+  if (typeof timelineData === 'undefined') {
+    console.error("❌ timelineData is not defined! Check timeline.js loading");
+    this.countryData = {
+      year: 1800,
+      title: "Europe in 1800",
+      description: "Historical borders",
+      countries: []
+    };
+    return;
+  }
+  
+  // Find 1800 data
+  this.countryData = timelineData.find(item => item.year === 1800);
+  
+  if (!this.countryData) {
+    console.warn("⚠️ No 1800 data found in timeline.js");
+    this.countryData = timelineData[0];
+    this.currentYear = this.countryData.year;
+  }
+  
+  console.log(`✅ Loaded ${this.countryData.countries.length} countries for ${this.countryData.year}`);
+}
       
       // Step 3: Apply 1800 styling to YOUR SVG
       this.applyYearStyling(1800);
