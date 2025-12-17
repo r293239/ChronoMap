@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About & Sources - European Borders Timeline</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .about-header {
+            background: linear-gradient(135deg, #4a6491 0%, #2c3e50 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px 3rem;
+        }
+        
+        .about-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .about-section h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .source-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .source-list li {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #4a6491;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background-color: #4a6491;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .back-link:hover {
+            background-color: #2c3e50;
+        }
+        
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .tech-item {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="about-header">
+        <div class="container">
+            <h1><i class="fas fa-info-circle"></i> About This Project</h1>
+            <p class="subtitle">Data sources, methodology, and technical details</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="about-content">
+            <div class="about-section">
+                <h2><i class="fas fa-book"></i> Project Overview</h2>
+                <p>This interactive visualization shows the changing borders of Europe from 1800 to the present day. The project aims to provide an educational tool for understanding how political boundaries have evolved through major historical events including the Napoleonic Wars, World Wars, the dissolution of empires, and the formation of the European Union.</p>
+                <p>The timeline allows users to observe the consolidation of nation-states, the rise and fall of empires, and the dramatic geopolitical shifts that have shaped modern Europe.</p>
+                <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Timeline</a>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-database"></i> Data Sources</h2>
+                <p>The border data is compiled from multiple historical sources. Major data points include:</p>
+                <ul class="source-list">
+                    <li><strong>Historical Atlas of Europe</strong> - Primary source for pre-1900 borders</li>
+                    <li><strong>Euratlas Historical Maps</strong> - Century-by-century boundary data</li>
+                    <li><strong>Wikimedia Commons</strong> - Historical SVG maps and boundary files</li>
+                    <li><strong>Stanford Geospatial Network</strong> - Georeferenced historical maps</li>
+                    <li><strong>University of Texas Historical Maps</strong> - Collection of historical boundaries</li>
+                </ul>
+                <p>All data has been converted to GeoJSON format and simplified for web visualization purposes. Some smaller states and microstates may be represented with simplified boundaries.</p>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-code"></i> Technical Implementation</h2>
+                <p>This project is built with standard web technologies:</p>
+                <div class="tech-list">
+                    <div class="tech-item">
+                        <i class="fab fa-html5 fa-2x" style="color: #e34f26;"></i>
+                        <h3>HTML5</h3>
+                        <p>Structure and semantic markup</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-css3-alt fa-2x" style="color: #1572b6;"></i>
+                        <h3>CSS3</h3>
+                        <p>Styling and responsive design</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-js fa-2x" style="color: #f7df1e;"></i>
+                        <h3>JavaScript</h3>
+                        <p>Interactive functionality</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-map fa-2x" style="color: #4CAF50;"></i>
+                        <h3>SVG</h3>
+                        <p>Vector map rendering</p>
+                    </div>
+                </div>
+                <p>The map visualization uses inline SVG manipulation to dynamically color and display countries based on the selected year. The timeline slider triggers JavaScript functions that update the map display and historical information panels.</p>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> Limitations & Notes</h2>
+                <p><strong>Note on historical accuracy:</strong> While we strive for accuracy, historical borders were often disputed or poorly defined. Some boundaries represent de jure (legal) claims rather than de facto (actual) control.</p>
+                <p><strong>Simplification:</strong> For performance and clarity, some borders have been simplified, particularly in regions with complex topography or numerous small states.</p>
+                <p><strong>Data gaps:</strong> Complete annual data for every European region is not available for all years. The visualization uses interpolation for years without precise boundary data.</p>
+                <p>This project is for educational purposes and may contain inaccuracies. Users are encouraged to consult primary historical sources for research purposes.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>European Borders Timeline Project | Educational Visualization</p>
+            <p class="footer-links">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                <a href="mailto:example@example.com"><i class="fas fa-envelope"></i> Contact</a>
+            </p>
+            <p class="copyright">© 2025 European Borders Timeline Project. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
