@@ -8,17 +8,15 @@ class SVGMapLoader {
         console.log("🗺️ SVGMapLoader initializing...");
         
         this.currentYear = 1800;
-        this.countryData = null;
+        this.currentData = null; // Current year's data
+        this.allTimelineData = null; // All timeline data
         this.translator = null;
         this.isLoading = false;
         this.currentColors = {};
+        this.availableYears = [];
         
-        // Ensure timeline.js is loaded
-        if (typeof timelineData === 'undefined') {
-            console.error("❌ timelineData not found. Make sure timeline.js is loaded first!");
-        } else {
-            console.log("✅ timelineData available");
-        }
+        // Store country elements for quick access
+        this.countryElements = new Map();
     }
 
     // Main initialization
@@ -28,11 +26,14 @@ class SVGMapLoader {
         try {
             this.showLoading(true);
             
-            // Step 1: Load the world map
+            // Step 1: Load all timeline data
+            this.loadAllTimelineData();
+            
+            // Step 2: Load the world map
             await this.loadWorldMap();
             
-            // Step 2: Load timeline data
-            this.loadTimelineData();
+            // Wait a bit for SVG to render
+            await new Promise(resolve => setTimeout(resolve, 100));
             
             // Step 3: Initialize country translator
             this.initializeTranslator();
@@ -56,6 +57,60 @@ class SVGMapLoader {
         }
     }
 
+    // Load ALL timeline data
+    loadAllTimelineData() {
+        console.log("📅 Loading ALL timeline data...");
+        
+        if (typeof timelineData === 'undefined') {
+            console.error("❌ timelineData is not defined. Check if timeline.js is loaded.");
+            
+            // Create minimal data
+            this.allTimelineData = [
+                {
+                    year: 1800,
+                    title: "Europe in 1800",
+                    description: "After the French Revolutionary Wars",
+                    countries: [
+                        {
+                            name: "French Republic",
+                            svg_id: "fr",
+                            color: "#1f77b4",
+                            capital: "Paris",
+                            ruler: "Napoleon Bonaparte"
+                        },
+                        {
+                            name: "Austrian Empire",
+                            svg_id: "at", 
+                            color: "#ff7f0e",
+                            capital: "Vienna",
+                            ruler: "Francis II"
+                        }
+                    ]
+                },
+                {
+                    year: 1815,
+                    title: "Congress of Vienna",
+                    description: "Post-Napoleonic settlement",
+                    countries: [
+                        {
+                            name: "Kingdom of France",
+                            svg_id: "fr",
+                            color: "#aec7e8",
+                            capital: "Paris",
+                            ruler: "Louis XVIII"
+                        }
+                    ]
+                }
+            ];
+        } else {
+            this.allTimelineData = timelineData;
+        }
+        
+        // Extract available years
+        this.availableYears = this.allTimelineData.map(d => d.year);
+        console.log(`✅ Loaded ${this.allTimelineData.length} periods:`, this.availableYears);
+    }
+
     // Load the world map SVG
     async loadWorldMap() {
         console.log("🌍 Loading world map...");
@@ -66,13 +121,12 @@ class SVGMapLoader {
         }
         
         try {
-            // Try to load world-map.svg
+            // Load world-map.svg
             const response = await fetch('maps/world-map.svg');
             
             if (response.ok) {
                 const svgText = await response.text();
                 
-                // Basic validation
                 if (svgText.includes('<svg') && svgText.includes('</svg>')) {
                     container.innerHTML = svgText;
                     console.log(`✅ SVG loaded successfully`);
@@ -83,13 +137,14 @@ class SVGMapLoader {
                         svgElement.style.width = '100%';
                         svgElement.style.height = '100%';
                     }
+                    
+                    // Store all country elements for quick access
+                    this.cacheCountryElements();
                 } else {
-                    console.warn(`File doesn't appear to be valid SVG`);
-                    this.createFallbackMap();
+                    throw new Error("Invalid SVG file");
                 }
             } else {
-                console.log(`Failed to load: ${response.status}`);
-                this.createFallbackMap();
+                throw new Error(`Failed to load: ${response.status}`);
             }
             
         } catch (error) {
@@ -98,69 +153,28 @@ class SVGMapLoader {
         }
     }
 
-    // Create fallback map if SVG fails to load
-    createFallbackMap() {
-        console.log("🔄 Creating fallback map...");
+    // Cache all country elements for quick access
+    cacheCountryElements() {
+        console.log("🔍 Caching country elements...");
         
-        const container = document.getElementById('map-container');
-        if (!container) return;
+        // Get all elements with country codes as IDs
+        const countryCodes = ['fr', 'at', 'de', 'ru', 'tr', 'gb', 'es', 'pt', 'se', 'dk', 'it'];
         
-        container.innerHTML = `
-            <div style="padding: 40px; text-align: center; color: #666; background: #f8f9fa; border-radius: 10px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <h3 style="margin-bottom: 20px; color: #d32f2f;">⚠️ Map Loading Issue</h3>
-                <p style="margin-bottom: 15px;">Unable to load <strong>maps/world-map.svg</strong></p>
-                <button onclick="location.reload()" 
-                        style="padding: 12px 30px; background: #283593; color: white; 
-                               border: none; border-radius: 6px; cursor: pointer; 
-                               font-weight: bold; margin-top: 20px;">
-                    🔄 Reload Page
-                </button>
-            </div>
-        `;
-    }
-
-    // Load timeline data from timeline.js
-    loadTimelineData() {
-        console.log("📅 Loading timeline data...");
+        countryCodes.forEach(code => {
+            const element = document.getElementById(code);
+            if (element) {
+                this.countryElements.set(code, element);
+                console.log(`✅ Cached ${code}:`, {
+                    tagName: element.tagName,
+                    id: element.id,
+                    children: element.children?.length || 0
+                });
+            } else {
+                console.warn(`⚠️  ${code} not found in SVG`);
+            }
+        });
         
-        if (typeof timelineData === 'undefined') {
-            console.error("❌ timelineData is not defined. Check if timeline.js is loaded.");
-            
-            // Create minimal fallback data
-            this.countryData = {
-                year: 1800,
-                title: "Europe in 1800",
-                description: "Historical borders",
-                countries: [
-                    {
-                        name: "French Republic",
-                        svg_id: "fr",
-                        color: "#1f77b4",
-                        capital: "Paris",
-                        ruler: "Napoleon Bonaparte"
-                    },
-                    {
-                        name: "Austrian Empire",
-                        svg_id: "at", 
-                        color: "#ff7f0e",
-                        capital: "Vienna",
-                        ruler: "Francis II"
-                    }
-                ]
-            };
-            return;
-        }
-        
-        // Find data for 1800
-        this.countryData = timelineData.find(item => item.year === 1800);
-        
-        if (!this.countryData) {
-            console.warn("⚠️ No 1800 data found, using first available year");
-            this.countryData = timelineData[0];
-            this.currentYear = this.countryData.year;
-        }
-        
-        console.log(`✅ Loaded data for ${this.countryData.year}: ${this.countryData.countries.length} countries`);
+        console.log(`✅ Cached ${this.countryElements.size} country elements`);
     }
 
     // Initialize the country translator
@@ -168,86 +182,53 @@ class SVGMapLoader {
         console.log("🔄 Initializing CountryTranslator...");
         
         if (typeof CountryTranslator === 'undefined') {
-            console.error("❌ CountryTranslator class not found. Make sure CountryTranslator.js is loaded!");
+            console.error("❌ CountryTranslator class not found!");
             
-            // Create simple fallback translator
-            this.translator = {
-                getElement: (code) => document.getElementById(code),
-                colorCountry: (code, color) => {
-                    const el = document.getElementById(code);
-                    if (el) {
-                        el.style.fill = color;
-                        return true;
-                    }
-                    return false;
-                },
-                resetAllColors: () => {
-                    document.querySelectorAll('path, g').forEach(el => {
-                        el.style.fill = '#f0f0f0';
-                    });
-                },
-                getCountryInfo: (code) => ({ name: code })
-            };
+            // Use our cached elements instead
+            console.log("⚠️ Using cached elements instead of translator");
             return;
         }
         
-        // Initialize the real translator
-        this.translator = new CountryTranslator().initialize();
-        console.log("✅ CountryTranslator initialized");
+        try {
+            this.translator = new CountryTranslator().initialize();
+            console.log("✅ CountryTranslator initialized");
+        } catch (error) {
+            console.error("❌ Failed to initialize translator:", error);
+            console.log("⚠️ Falling back to direct element coloring");
+        }
     }
 
     // Apply styling for a specific year
     applyYearStyling(year) {
         console.log(`🎨 Applying ${year} styling...`);
         
-        if (!this.countryData) {
-            console.error("❌ No country data available");
+        // Find data for this year
+        const yearData = this.allTimelineData.find(d => d.year === year);
+        if (!yearData) {
+            console.error(`❌ No data found for year ${year}`);
             return;
         }
         
-        // Update current year
         this.currentYear = year;
+        this.currentData = yearData;
         
         // Update UI elements
         this.updateYearDisplay(year);
         
-        // Reset all colors first
-        if (this.translator && this.translator.resetAllColors) {
-            this.translator.resetAllColors();
-        } else {
-            // Fallback reset
-            document.querySelectorAll('path, g').forEach(el => {
-                el.style.fill = '#f0f0f0';
-                el.style.stroke = '#999';
-            });
-        }
+        // Reset ALL elements to light gray first
+        this.resetAllColors();
         
-        // Apply new colors
+        // Apply colors for this year
         let coloredCount = 0;
         this.currentColors = {};
         
-        this.countryData.countries.forEach(country => {
-            let colored = false;
-            
-            if (this.translator && this.translator.colorCountry) {
-                colored = this.translator.colorCountry(country.svg_id, country.color);
-            } else {
-                // Fallback coloring
-                const element = document.getElementById(country.svg_id);
-                if (element) {
-                    element.style.fill = country.color;
-                    element.style.stroke = '#333';
-                    element.style.strokeWidth = '1px';
-                    colored = true;
-                }
-            }
-            
-            if (colored) {
+        yearData.countries.forEach(country => {
+            if (this.colorCountryDirectly(country.svg_id, country.color)) {
                 coloredCount++;
                 this.currentColors[country.svg_id] = country.color;
                 
-                // Store country data on element for interactions
-                const element = this.translator?.getElement?.(country.svg_id) || document.getElementById(country.svg_id);
+                // Store country data on element
+                const element = this.countryElements.get(country.svg_id);
                 if (element) {
                     element.dataset.countryName = country.name;
                     element.dataset.capital = country.capital;
@@ -268,12 +249,68 @@ class SVGMapLoader {
         this.setupHoverInteractions();
     }
 
+    // Color a country directly (fallback method)
+    colorCountryDirectly(countryCode, color) {
+        // Try multiple methods
+        let element = null;
+        
+        // 1. Try cached element
+        element = this.countryElements.get(countryCode);
+        
+        // 2. Try translator
+        if (!element && this.translator && this.translator.getElement) {
+            element = this.translator.getElement(countryCode);
+        }
+        
+        // 3. Try direct DOM lookup
+        if (!element) {
+            element = document.getElementById(countryCode);
+        }
+        
+        if (element) {
+            element.style.fill = color;
+            element.style.stroke = '#333';
+            element.style.strokeWidth = '1px';
+            console.log(`🎨 Directly colored ${countryCode} with ${color}`);
+            return true;
+        }
+        
+        console.warn(`⚠️ Could not find element for ${countryCode}`);
+        return false;
+    }
+
+    // Reset all colors to light gray
+    resetAllColors() {
+        console.log("🔄 Resetting all colors...");
+        
+        let resetCount = 0;
+        
+        // Reset all cached elements
+        for (const [code, element] of this.countryElements) {
+            if (element) {
+                element.style.fill = '#f0f0f0';
+                element.style.stroke = '#999';
+                element.style.strokeWidth = '0.5px';
+                resetCount++;
+            }
+        }
+        
+        // Also reset via translator if available
+        if (this.translator && this.translator.resetAllColors) {
+            this.translator.resetAllColors();
+        }
+        
+        console.log(`✅ Reset ${resetCount} elements`);
+    }
+
     // Update year display in UI
     updateYearDisplay(year) {
+        const yearData = this.allTimelineData.find(d => d.year === year);
+        
         const elements = {
             'current-year': year.toString(),
-            'era-title': this.countryData?.title || 'Europe',
-            'era-description': this.countryData?.description || 'Historical borders',
+            'era-title': yearData?.title || 'Historical Map',
+            'era-description': yearData?.description || 'Loading...',
             'map-year': year.toString()
         };
         
@@ -294,13 +331,14 @@ class SVGMapLoader {
     // Update country list panel
     updateCountryList() {
         const container = document.getElementById('country-list');
-        if (!container || !this.countryData) return;
-        
-        const europeanCountries = this.countryData.countries;
+        if (!container || !this.currentData) return;
         
         container.innerHTML = `
+            <div style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">
+                Showing: ${this.currentData.year} - ${this.currentData.title}
+            </div>
             <div class="country-grid">
-                ${europeanCountries.map(country => `
+                ${this.currentData.countries.map(country => `
                     <div class="country-card" 
                          style="border-color: ${country.color}"
                          onclick="window.mapLoader?.showCountryDetails('${country.svg_id}')">
@@ -310,7 +348,6 @@ class SVGMapLoader {
                             <p><strong>Ruler:</strong> ${country.ruler}</p>
                             <p><strong>Capital:</strong> ${country.capital}</p>
                             ${country.area ? `<p><strong>Area:</strong> ${country.area}</p>` : ''}
-                            ${country.population ? `<p><strong>Population:</strong> ${country.population}</p>` : ''}
                             ${country.notes ? `<p class="notes">${country.notes}</p>` : ''}
                         </div>
                     </div>
@@ -319,236 +356,111 @@ class SVGMapLoader {
         `;
     }
 
-    // Setup hover interactions for countries
+    // Setup hover interactions
     setupHoverInteractions() {
         console.log("🖱️ Setting up hover interactions...");
         
-        // Try to get all country elements
-        const countryCodes = this.countryData?.countries?.map(c => c.svg_id) || [];
+        // Remove old listeners first
+        this.removeAllEventListeners();
         
-        countryCodes.forEach(code => {
-            const element = this.translator?.getElement?.(code) || document.getElementById(code);
-            if (!element) return;
+        // Add new listeners to all country elements
+        for (const [code, element] of this.countryElements) {
+            if (!element) continue;
             
-            // Mouse enter - highlight
+            // Mouse enter
             element.addEventListener('mouseenter', (e) => {
                 this.highlightCountry(element);
                 this.showTooltip(element);
             });
             
-            // Mouse leave - unhighlight
+            // Mouse leave
             element.addEventListener('mouseleave', (e) => {
                 this.unhighlightCountry(element);
                 this.hideTooltip();
             });
             
-            // Click - show details
+            // Click
             element.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.showCountryDetails(code);
             });
-        });
-        
-        console.log(`✅ Hover interactions setup for ${countryCodes.length} countries`);
-    }
-
-    // Highlight a country (hover effect)
-    highlightCountry(element) {
-        if (!element) return;
-        
-        // Store original values
-        if (!element.dataset.originalFilter) {
-            element.dataset.originalFilter = element.style.filter || 'none';
-            element.dataset.originalZIndex = element.style.zIndex || '';
         }
         
-        // Apply highlight
-        element.style.filter = 'brightness(1.15) drop-shadow(0 0 4px rgba(0,0,0,0.2))';
-        element.style.zIndex = '1000';
-        element.style.strokeWidth = '2px';
-        element.style.stroke = '#000';
+        console.log(`✅ Hover interactions setup for ${this.countryElements.size} countries`);
     }
 
-    // Remove highlight
-    unhighlightCountry(element) {
-        if (!element) return;
-        
-        // Restore original values
-        element.style.filter = element.dataset.originalFilter || 'none';
-        element.style.zIndex = element.dataset.originalZIndex || '';
-        element.style.strokeWidth = '1px';
-        element.style.stroke = '#333';
-    }
-
-    // Show tooltip for a country
-    showTooltip(element) {
-        if (!element || !element.dataset.countryName) return;
-        
-        // Create or get tooltip
-        let tooltip = document.getElementById('chronomap-tooltip');
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.id = 'chronomap-tooltip';
-            tooltip.style.cssText = `
-                position: fixed;
-                background: rgba(0, 0, 0, 0.85);
-                color: white;
-                padding: 12px 16px;
-                border-radius: 8px;
-                font-size: 14px;
-                pointer-events: none;
-                z-index: 10000;
-                max-width: 250px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                border: 1px solid rgba(255,255,255,0.1);
-                backdrop-filter: blur(5px);
-                display: none;
-            `;
-            document.body.appendChild(tooltip);
+    // Remove all event listeners
+    removeAllEventListeners() {
+        for (const [code, element] of this.countryElements) {
+            if (!element) continue;
+            
+            // Clone and replace to remove all listeners
+            const newElement = element.cloneNode(true);
+            element.parentNode.replaceChild(newElement, element);
+            this.countryElements.set(code, newElement);
         }
-        
-        // Set content
-        tooltip.innerHTML = `
-            <div style="font-weight: bold; color: #ffd700; margin-bottom: 5px;">
-                ${element.dataset.countryName}
-            </div>
-            <div style="margin-bottom: 3px;"><strong>Ruler:</strong> ${element.dataset.ruler || 'Unknown'}</div>
-            <div><strong>Capital:</strong> ${element.dataset.capital || 'Unknown'}</div>
-            <div style="margin-top: 8px; font-size: 12px; opacity: 0.8;">
-                Click for details
-            </div>
-        `;
-        
-        // Position near cursor
-        const updatePosition = (e) => {
-            tooltip.style.left = (e.clientX + 15) + 'px';
-            tooltip.style.top = (e.clientY - tooltip.offsetHeight - 10) + 'px';
-        };
-        
-        // Show tooltip
-        tooltip.style.display = 'block';
-        
-        // Update position on mouse move
-        const mouseMoveHandler = (e) => updatePosition(e);
-        document.addEventListener('mousemove', mouseMoveHandler);
-        
-        // Store handler for cleanup
-        element._tooltipHandler = mouseMoveHandler;
     }
 
-    // Hide tooltip
-    hideTooltip() {
-        const tooltip = document.getElementById('chronomap-tooltip');
-        if (tooltip) {
-            tooltip.style.display = 'none';
-        }
-        
-        // Clean up event listeners
-        document.querySelectorAll('[data-country-name]').forEach(el => {
-            if (el._tooltipHandler) {
-                document.removeEventListener('mousemove', el._tooltipHandler);
-                delete el._tooltipHandler;
-            }
-        });
-    }
-
-    // Show country details panel
-    showCountryDetails(countryCode) {
-        console.log(`📖 Showing details for: ${countryCode}`);
-        
-        // Find country data
-        const country = this.countryData?.countries?.find(c => c.svg_id === countryCode);
-        if (!country) {
-            console.warn(`Country data not found for: ${countryCode}`);
+    // ================= YEAR NAVIGATION =================
+    
+    // Jump to specific year
+    jumpToYear(year) {
+        if (isNaN(year) || year < 1400 || year > 2025) {
+            console.warn(`Invalid year: ${year}`);
             return;
         }
         
-        // Get or create details panel
-        let detailsPanel = document.getElementById('country-details');
-        if (!detailsPanel) {
-            detailsPanel = document.createElement('div');
-            detailsPanel.id = 'country-details';
-            detailsPanel.style.cssText = `
-                display: none;
-                margin-top: 25px;
-                background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-                border-radius: 10px;
-                padding: 25px;
-                box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-                border: 1px solid rgba(255, 215, 0, 0.3);
-            `;
-            
-            const infoSection = document.querySelector('.info-section');
-            if (infoSection) {
-                infoSection.appendChild(detailsPanel);
-            } else {
-                document.body.appendChild(detailsPanel);
+        // Find closest available year
+        let targetYear = year;
+        if (!this.availableYears.includes(year)) {
+            // Find nearest available year
+            const sortedYears = [...this.availableYears].sort((a, b) => a - b);
+            for (const availableYear of sortedYears) {
+                if (availableYear >= year) {
+                    targetYear = availableYear;
+                    break;
+                }
             }
+            if (targetYear === year) targetYear = this.availableYears[this.availableYears.length - 1];
+            
+            console.log(`📅 No data for ${year}, using ${targetYear} instead`);
         }
         
-        // Populate details
-        detailsPanel.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid rgba(40, 53, 147, 0.2);">
-                <h2 style="margin: 0; color: ${country.color};">${country.name}</h2>
-                <span style="background: linear-gradient(45deg, #283593, #5c6bc0); color: white; padding: 8px 20px; border-radius: 20px; font-weight: 600;">
-                    ${this.currentYear}
-                </span>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Ruler</div>
-                    <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${country.ruler}</div>
-                </div>
-                
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Capital</div>
-                    <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${country.capital}</div>
-                </div>
-                
-                ${country.area ? `
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Area</div>
-                    <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${country.area}</div>
-                </div>` : ''}
-                
-                ${country.population ? `
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Population</div>
-                    <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${country.population}</div>
-                </div>` : ''}
-                
-                ${country.status ? `
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1);">
-                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Status</div>
-                    <div style="font-size: 1.1rem; color: #283593; font-weight: 600;">${country.status}</div>
-                </div>` : ''}
-            </div>
-            
-            ${country.notes ? `
-            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
-                <h3 style="color: #283593; margin-bottom: 10px;">Historical Context</h3>
-                <p style="line-height: 1.6; color: #444;">${country.notes}</p>
-            </div>` : ''}
-            
-            <div style="text-align: center;">
-                <button onclick="document.getElementById('country-details').style.display='none'" 
-                        style="padding: 12px 30px; background: #283593; color: white; 
-                               border: none; border-radius: 6px; cursor: pointer; 
-                               font-weight: bold; font-size: 1rem;">
-                    Close Details
-                </button>
-            </div>
-        `;
-        
-        // Show panel
-        detailsPanel.style.display = 'block';
-        
-        // Scroll to details if needed
-        detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        console.log(`⏩ Jumping to ${targetYear}...`);
+        this.applyYearStyling(targetYear);
+        this.updateUIControls();
+    }
+    
+    // Go to next available year
+    nextYear() {
+        const currentIndex = this.availableYears.indexOf(this.currentYear);
+        if (currentIndex < this.availableYears.length - 1) {
+            const nextYear = this.availableYears[currentIndex + 1];
+            this.jumpToYear(nextYear);
+        }
+    }
+    
+    // Go to previous available year
+    prevYear() {
+        const currentIndex = this.availableYears.indexOf(this.currentYear);
+        if (currentIndex > 0) {
+            const prevYear = this.availableYears[currentIndex - 1];
+            this.jumpToYear(prevYear);
+        }
+    }
+    
+    // Go to next decade
+    nextDecade() {
+        this.jumpToYear(this.currentYear + 10);
+    }
+    
+    // Go to previous decade
+    prevDecade() {
+        this.jumpToYear(this.currentYear - 10);
     }
 
-    // Setup UI controls (slider, buttons)
+    // ================= UI CONTROLS =================
+    
     setupInteractions() {
         console.log("🎮 Setting up UI interactions...");
         
@@ -558,166 +470,178 @@ class SVGMapLoader {
         // Year slider
         const yearSlider = document.getElementById('year-slider');
         if (yearSlider) {
+            yearSlider.min = Math.min(...this.availableYears, 1400);
+            yearSlider.max = Math.max(...this.availableYears, 2025);
+            yearSlider.value = this.currentYear;
+            
             let sliderTimeout;
             yearSlider.addEventListener('input', (e) => {
                 const year = parseInt(e.target.value);
-                
-                // Update display immediately
                 this.updateYearDisplay(year);
                 
-                // Debounce the actual map update
                 clearTimeout(sliderTimeout);
                 sliderTimeout = setTimeout(() => {
                     this.jumpToYear(year);
                 }, 300);
             });
-            console.log("✅ Year slider setup");
         }
         
         // Navigation buttons
-        const setupButton = (id, action) => {
-            const button = document.getElementById(id);
-            if (button) {
-                button.addEventListener('click', action);
-                return true;
-            }
-            return false;
-        };
-        
-        setupButton('prev-decade', () => this.prevDecade());
-        setupButton('next-decade', () => this.nextDecade());
-        setupButton('jump-1800', () => this.jumpToYear(1800));
+        document.getElementById('prev-decade')?.addEventListener('click', () => this.prevDecade());
+        document.getElementById('next-decade')?.addEventListener('click', () => this.nextDecade());
+        document.getElementById('jump-1800')?.addEventListener('click', () => this.jumpToYear(1800));
+        document.getElementById('prev-year')?.addEventListener('click', () => this.prevYear());
+        document.getElementById('next-year')?.addEventListener('click', () => this.nextYear());
         
         console.log("✅ UI controls setup complete");
     }
 
-    // Update UI controls state
     updateUIControls() {
-        // Update slider labels
+        // Update slider current label
         const currentLabel = document.querySelector('.slider-current');
         if (currentLabel) {
-            currentLabel.textContent = this.currentYear === 1800 ? 
-                '1800 (Starting Point)' : this.currentYear.toString();
+            currentLabel.textContent = `${this.currentYear}`;
         }
         
-        // Update button states based on current year
-        const prevButton = document.getElementById('prev-decade');
-        const nextButton = document.getElementById('next-decade');
-        
-        if (prevButton) {
-            prevButton.disabled = this.currentYear <= 1400;
-            prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
-            prevButton.style.cursor = prevButton.disabled ? 'not-allowed' : 'pointer';
+        // Update available years display
+        const yearsList = document.getElementById('available-years');
+        if (yearsList) {
+            yearsList.innerHTML = this.availableYears.map(year => 
+                `<button onclick="mapLoader.jumpToYear(${year})" 
+                        class="${year === this.currentYear ? 'active' : ''}">
+                    ${year}
+                </button>`
+            ).join('');
         }
-        if (nextButton) {
-            nextButton.disabled = this.currentYear >= 2025;
-            nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
-            nextButton.style.cursor = nextButton.disabled ? 'not-allowed' : 'pointer';
+        
+        // Update button states
+        const prevYearBtn = document.getElementById('prev-year');
+        const nextYearBtn = document.getElementById('next-year');
+        const currentIndex = this.availableYears.indexOf(this.currentYear);
+        
+        if (prevYearBtn) {
+            prevYearBtn.disabled = currentIndex <= 0;
+        }
+        if (nextYearBtn) {
+            nextYearBtn.disabled = currentIndex >= this.availableYears.length - 1;
         }
     }
 
-    // Show loading state
+    // ================= TOOLTIP & DETAILS =================
+    
+    highlightCountry(element) {
+        if (!element) return;
+        element.style.filter = 'brightness(1.15)';
+        element.style.strokeWidth = '2px';
+    }
+
+    unhighlightCountry(element) {
+        if (!element) return;
+        element.style.filter = 'none';
+        element.style.strokeWidth = '1px';
+    }
+
+    showTooltip(element) {
+        if (!element || !element.dataset.countryName) return;
+        
+        const tooltip = document.getElementById('chronomap-tooltip') || 
+                       this.createTooltip();
+        
+        tooltip.innerHTML = `
+            <strong>${element.dataset.countryName}</strong><br>
+            ${element.dataset.ruler || ''}<br>
+            <small>Click for details</small>
+        `;
+        
+        tooltip.style.display = 'block';
+        this.positionTooltip(element, tooltip);
+    }
+
+    createTooltip() {
+        const tooltip = document.createElement('div');
+        tooltip.id = 'chronomap-tooltip';
+        tooltip.style.cssText = `
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+        `;
+        document.body.appendChild(tooltip);
+        return tooltip;
+    }
+
+    positionTooltip(element, tooltip) {
+        const rect = element.getBoundingClientRect();
+        tooltip.style.left = (rect.left + window.scrollX) + 'px';
+        tooltip.style.top = (rect.top + window.scrollY - 40) + 'px';
+    }
+
+    hideTooltip() {
+        const tooltip = document.getElementById('chronomap-tooltip');
+        if (tooltip) tooltip.style.display = 'none';
+    }
+
+    showCountryDetails(countryCode) {
+        const country = this.currentData?.countries?.find(c => c.svg_id === countryCode);
+        if (!country) return;
+        
+        let detailsPanel = document.getElementById('country-details');
+        if (!detailsPanel) {
+            detailsPanel = document.createElement('div');
+            detailsPanel.id = 'country-details';
+            document.querySelector('.info-section')?.appendChild(detailsPanel) || 
+            document.body.appendChild(detailsPanel);
+        }
+        
+        detailsPanel.innerHTML = `
+            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: ${country.color};">${country.name}</h3>
+                    <span style="background: #283593; color: white; padding: 4px 12px; border-radius: 12px;">
+                        ${this.currentYear}
+                    </span>
+                </div>
+                <p><strong>Ruler:</strong> ${country.ruler}</p>
+                <p><strong>Capital:</strong> ${country.capital}</p>
+                ${country.area ? `<p><strong>Area:</strong> ${country.area}</p>` : ''}
+                ${country.notes ? `<p><strong>Notes:</strong> ${country.notes}</p>` : ''}
+                <button onclick="document.getElementById('country-details').remove()" 
+                        style="margin-top: 15px; padding: 8px 16px; background: #283593; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Close
+                </button>
+            </div>
+        `;
+    }
+
+    // ================= UTILITIES =================
+    
     showLoading(show) {
-        this.isLoading = show;
-        
         const loadingEl = document.querySelector('.loading');
-        const mapContainer = document.getElementById('map-container');
-        
         if (loadingEl) {
             loadingEl.style.display = show ? 'flex' : 'none';
         }
-        
-        if (mapContainer) {
-            mapContainer.style.opacity = show ? '0.5' : '1';
-            mapContainer.style.pointerEvents = show ? 'none' : 'auto';
-        }
     }
 
-    // Show error message
     showError(message) {
         console.error("ChronoMap Error:", message);
-        
-        const container = document.getElementById('map-container');
-        if (container) {
-            container.innerHTML = `
-                <div style="padding: 40px; text-align: center; color: #d32f2f; background: #ffebee; border-radius: 10px; height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                    <h3 style="margin-bottom: 20px;">⚠️ Error</h3>
-                    <p style="margin-bottom: 25px; font-size: 1.1rem;">${message}</p>
-                    <button onclick="location.reload()" 
-                            style="padding: 12px 25px; background: #283593; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                        🔄 Reload Page
-                    </button>
-                </div>
-            `;
-        }
+        alert("Error: " + message);
     }
 
-    // ================= PUBLIC API =================
-    
-    // Jump to specific year
-    jumpToYear(year) {
-        if (isNaN(year) || year < 1400 || year > 2025) {
-            console.warn(`Invalid year: ${year}. Must be between 1400 and 2025.`);
-            return;
-        }
-        
-        console.log(`⏩ Jumping to year ${year}...`);
-        
-        // Find data for this year
-        if (timelineData) {
-            const newData = timelineData.find(item => item.year === year);
-            if (newData) {
-                this.countryData = newData;
-                this.applyYearStyling(year);
-                this.updateUIControls();
-                return;
-            }
-        }
-        
-        // If no specific data for this year, just update the display
-        this.currentYear = year;
-        this.updateYearDisplay(year);
-        this.updateUIControls();
-        
-        console.log(`✅ Jumped to ${year}`);
-    }
-    
-    // Go to next decade
-    nextDecade() {
-        const nextYear = this.currentYear + 10;
-        if (nextYear <= 2025) {
-            this.jumpToYear(nextYear);
-        }
-    }
-    
-    // Go to previous decade
-    prevDecade() {
-        const prevYear = this.currentYear - 10;
-        if (prevYear >= 1400) {
-            this.jumpToYear(prevYear);
-        }
-    }
-    
-    // Debug function - FIXED VERSION
     debug() {
-        console.log("=== SVGMapLoader Debug Info ===");
+        console.log("=== SVGMapLoader Debug ===");
         console.log("Current Year:", this.currentYear);
-        console.log("Country Data:", this.countryData);
-        console.log("Translator:", this.translator ? "✅ Initialized" : "❌ Not initialized");
-        console.log("Current Colors:", this.currentColors);
-        console.log("Timeline Data:", timelineData ? `✅ ${timelineData.length} periods` : "❌ Not loaded");
-        
-        // Check if SVG elements are found
-        if (this.countryData?.countries) {
-            console.log("\n🔍 Country Element Check:");
-            this.countryData.countries.forEach(country => {
-                const element = this.translator?.getElement?.(country.svg_id) || document.getElementById(country.svg_id);
-                console.log(`${country.name} (${country.svg_id}): ${element ? '✅ Found' : '❌ Not found'}`);
-            });
-        }
+        console.log("Available Years:", this.availableYears);
+        console.log("Cached Elements:", this.countryElements.size);
+        console.log("Current Data:", this.currentData);
+        console.log("Translator:", this.translator ? "✅" : "❌");
     }
 }
 
 // Make globally available
 window.SVGMapLoader = SVGMapLoader;
-console.log("✅ SVGMapLoader loaded. Use: const loader = new SVGMapLoader(); loader.initialize();");
+console.log("✅ SVGMapLoader loaded with multi-year support!");
