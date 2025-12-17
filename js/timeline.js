@@ -1,4 +1,4 @@
-// js/timeline.js - Timeline data for ChronoMap
+// js/timeline.js - UPDATED with correct country IDs
 const timelineData = [
   {
     "year": 1800,
@@ -13,8 +13,9 @@ const timelineData = [
         "capital": "Paris",
         "ruler": "Napoleon Bonaparte (First Consul)",
         "notes": "Revolutionary state, expanding under Napoleon's leadership",
-        "area": "Approx. 550,000 km²",
-        "population": "29 million"
+        "area": "550,000 km²",
+        "population": "29 million",
+        "status": "Revolutionary Republic"
       },
       {
         "name": "Austrian Empire",
@@ -23,8 +24,9 @@ const timelineData = [
         "capital": "Vienna",
         "ruler": "Francis II",
         "notes": "Habsburg monarchy, leader of anti-French coalition",
-        "area": "Approx. 698,700 km²",
-        "population": "21 million"
+        "area": "698,700 km²",
+        "population": "21 million",
+        "status": "Empire"
       },
       {
         "name": "Kingdom of Prussia",
@@ -33,8 +35,9 @@ const timelineData = [
         "capital": "Berlin",
         "ruler": "Frederick William III",
         "notes": "Major German power, modernizing state",
-        "area": "Approx. 300,000 km²",
-        "population": "9.7 million"
+        "area": "300,000 km²",
+        "population": "9.7 million",
+        "status": "Kingdom"
       },
       {
         "name": "Russian Empire",
@@ -43,18 +46,20 @@ const timelineData = [
         "capital": "Saint Petersburg",
         "ruler": "Paul I",
         "notes": "Largest country in the world, absolute monarchy",
-        "area": "Approx. 16.8 million km²",
-        "population": "40 million"
+        "area": "16.8 million km²",
+        "population": "40 million",
+        "status": "Empire"
       },
       {
         "name": "Ottoman Empire",
         "svg_id": "tr",
         "color": "#9467bd",
-        "capital": "Constantinople (Istanbul)",
+        "capital": "Constantinople",
         "ruler": "Selim III",
         "notes": "Declining empire, controlled Balkans",
-        "area": "Approx. 2.4 million km²",
-        "population": "25 million"
+        "area": "2.4 million km²",
+        "population": "25 million",
+        "status": "Empire"
       },
       {
         "name": "United Kingdom",
@@ -63,8 +68,9 @@ const timelineData = [
         "capital": "London",
         "ruler": "George III",
         "notes": "Constitutional monarchy, naval superpower",
-        "area": "Approx. 230,000 km²",
-        "population": "16 million"
+        "area": "230,000 km²",
+        "population": "16 million",
+        "status": "Kingdom"
       },
       {
         "name": "Kingdom of Spain",
@@ -73,8 +79,9 @@ const timelineData = [
         "capital": "Madrid",
         "ruler": "Charles IV",
         "notes": "Bourbon monarchy, colonial empire in decline",
-        "area": "Approx. 510,000 km²",
-        "population": "11.5 million"
+        "area": "510,000 km²",
+        "population": "11.5 million",
+        "status": "Kingdom"
       },
       {
         "name": "Kingdom of Portugal",
@@ -83,8 +90,9 @@ const timelineData = [
         "capital": "Lisbon",
         "ruler": "Maria I",
         "notes": "Braganza dynasty, British ally",
-        "area": "Approx. 92,000 km²",
-        "population": "3.1 million"
+        "area": "92,000 km²",
+        "population": "3.1 million",
+        "status": "Kingdom"
       },
       {
         "name": "Kingdom of Sweden",
@@ -92,9 +100,10 @@ const timelineData = [
         "color": "#17becf",
         "capital": "Stockholm",
         "ruler": "Gustav IV Adolf",
-        "notes": "Lost Finland to Russia in 1809",
-        "area": "Approx. 450,000 km²",
-        "population": "2.3 million"
+        "notes": "Will lose Finland to Russia in 1809",
+        "area": "450,000 km²",
+        "population": "2.3 million",
+        "status": "Kingdom"
       },
       {
         "name": "Denmark-Norway",
@@ -103,48 +112,35 @@ const timelineData = [
         "capital": "Copenhagen",
         "ruler": "Christian VII",
         "notes": "Personal union of Denmark and Norway",
-        "area": "Approx. 487,000 km²",
-        "population": "1.9 million"
+        "area": "487,000 km²",
+        "population": "1.9 million",
+        "status": "Dual Monarchy"
+      },
+      {
+        "name": "Italian States",
+        "svg_id": "it",
+        "color": "#ff9896",
+        "capital": "Various",
+        "ruler": "Multiple rulers",
+        "notes": "Collection of small states and kingdoms",
+        "area": "Varies",
+        "population": "18 million",
+        "status": "Various"
       }
     ]
   },
   {
     "year": 1815,
     "title": "Congress of Vienna",
-    "description": "Post-Napoleonic settlement, restoration of monarchies",
-    "continent": "europe",
-    "countries": [
-      {
-        "name": "Kingdom of France",
-        "svg_id": "fr",
-        "color": "#1f77b4",
-        "capital": "Paris",
-        "ruler": "Louis XVIII",
-        "notes": "Bourbon Restoration, constitutional monarchy"
-      },
-      {
-        "name": "Austrian Empire",
-        "svg_id": "at",
-        "color": "#ff7f0e",
-        "capital": "Vienna",
-        "ruler": "Francis I",
-        "notes": "Gained Lombardy-Venetia, dominant in Italy"
-      }
-    ]
-  },
-  {
-    "year": 1789,
-    "title": "French Revolution Begins",
-    "description": "Start of the French Revolution, absolute monarchy ends",
-    "continent": "europe",
+    "description": "Post-Napoleonic European settlement",
     "countries": [
       {
         "name": "Kingdom of France",
         "svg_id": "fr",
         "color": "#aec7e8",
-        "capital": "Versailles/Paris",
-        "ruler": "Louis XVI",
-        "notes": "Absolute monarchy, pre-revolution"
+        "capital": "Paris",
+        "ruler": "Louis XVIII",
+        "notes": "Bourbon Restoration"
       }
     ]
   }
@@ -165,5 +161,5 @@ window.getCountryData = function(year, countryCode) {
   return yearData.countries.find(country => country.svg_id === countryCode) || null;
 };
 
-console.log("Timeline data loaded: " + timelineData.length + " periods available");
-console.log("Years available: " + timelineData.map(d => d.year).join(", "));
+console.log("✅ timeline.js loaded: " + timelineData.length + " periods available");
+console.log("📅 Years available: " + timelineData.map(d => d.year).join(", "));
